@@ -1,0 +1,17 @@
+{
+  "name": "les-petits-plats",
+  "version": "1.0.0",
+  "description": "Projet 7 du parcours DFE OC",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Valentin Kestelman",
+  "license": "ISC",
+  "dependencies": {
+    "bootstrap": "^5.0.2"
+  },
+  "devDependencies": {
+    "@popperjs/core": "^2.9.2"
+  }
+}
