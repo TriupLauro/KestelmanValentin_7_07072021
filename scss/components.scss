@@ -1,4 +1,43 @@
 .card-placeholder {
   height: 11.125rem;
   background-color: #C7BEBE;
+  border-radius: 0.25rem 0.25rem 0 0;
 }
+
+.card {
+  height: 22.75rem;
+}
+
+.input-group {
+  height: 4.25rem;
+}
+
+.input-group-text {
+  background-color: #E7E7E7;
+  font-size: 2rem;
+}
+
+.alert-primary {
+  color: white;
+  background-color: #3282F7;
+}
+
+.alert {
+  font-size: 0.875rem;
+  height: 2.25rem;
+  line-height: 2.25rem;
+}
+
+.btn {
+  color: white;
+  font-weight: bold;
+}
+
+.dropdown-toggle {
+  height: 4.25rem;
+}
+
+//.bi-clock {
+//  font-size: 1.25rem;
+//  line-height: 1.25rem;
+//}

@@ -4,7 +4,8 @@
   "description": "Projet 7 du parcours DFE OC",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "compile": "sass scss/style.scss:css/style.css"
   },
   "author": "Valentin Kestelman",
   "license": "ISC",
