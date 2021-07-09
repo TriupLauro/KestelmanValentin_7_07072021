@@ -2,31 +2,43 @@ import {recipes} from "./database/recipes.js";
 
 // Find the keyword in the recipe database
 
+function searchRecipeNames(keyword, recipes) {
+    return recipes.filter(recipe => recipe.name.toLowerCase().includes(keyword));
+}
 
-//const recipeAppliances = recipes.map(recipe => `${recipe.id} : ${recipe.appliance}`);
-//const recipeUstensils = recipes.map(recipe => `${recipe.id} : ${recipe.ustensils}`);
-//const ingredientsArray = recipes.map(recipe => recipe.ingredients.map(ingredient => `${recipe.id} : ${ingredient.ingredient}`));
+function searchAppliance(keyword, recipes) {
+    return recipes.filter(recipe => recipe.appliance.toLowerCase().includes(keyword));
+}
 
-//console.log(recipeNames);
-//console.log(recipeAppliances);
-//console.log(recipeUstensils);
-//console.log(ingredientsArray);
-
-function getRecipeNames(recipes) {
-    const recipeNames = [];
-    for(let recipe of recipes) {
-        const currentObject = {
-            id:recipe.id,
-            name:recipe.name.toLowerCase()
+function searchUstensils(keyword, recipes) {
+    return recipes.filter(recipe => {
+        const ustensilsArray = recipe.ustensils;
+        for (let ustensil of ustensilsArray) {
+            if (ustensil.toLowerCase().includes(keyword)) {
+                return true;
+            }
         }
-        recipeNames.push(currentObject);
-    }
-    return recipeNames;
+        return false;
+    });
 }
 
-function searchRecipeNames(keyword, recipeNames) {
-    return recipeNames.filter(recipeNameObject => recipeNameObject.name.includes(keyword))
+function getIngredientArray(recipe) {
+    return recipe.ingredients.map(item => item.ingredient.toLowerCase());
 }
 
-const recipeNames = getRecipeNames(recipes);
-console.log(searchRecipeNames('tarte', recipeNames));
+function searchIngredients(keyword, recipes) {
+    return recipes.filter(recipe => {
+        const ingredientsArray = getIngredientArray(recipe);
+        for (let ingredient of ingredientsArray) {
+            if (ingredient.includes(keyword)) {
+                return true;
+            }
+        }
+        return false;
+    });
+}
+
+console.log(searchRecipeNames('chocolat',recipes));
+console.log(searchAppliance('cas',recipes));
+console.log(searchUstensils('cui',recipes));
+console.log(searchIngredients('farine',recipes));
