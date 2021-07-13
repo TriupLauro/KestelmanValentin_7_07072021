@@ -60,7 +60,7 @@
         </div>
     </div>
 
-    <div class="row g-4" id="recipes-container">
+    <template id="js-recipe-card">
         <div class="col-4">
             <div class="card rounded border-0">
                 <div class="card-placeholder"></div>
@@ -68,22 +68,22 @@
 
                     <div class="container-fluid g-3">
                         <div class="row lh-1 mb-1">
-                            <div class="col-auto">
-                                <h2 class="card-title">Limonade de coco </h2>
+                            <div class="col-8">
+                                <h2 class="card-title text-truncate js-recipe-title">Limonade de coco </h2>
                             </div>
                             <div class="col text-end">
-                                <i class="bi bi-clock"></i><strong class="fs-2"> 10 min</strong>
+                                <i class="bi bi-clock"></i><strong class="fs-2 js-recipe-duration"> 10 min</strong>
                             </div>
                         </div>
                         <div class="row fs-6 lh-sm gx-2">
-                            <div class="col-6">
-                                <strong>Lait de coco:</strong> 400ml<br/>
-                                <strong>Jus de citron:</strong> 2<br/>
-                                <strong>Crème de coco:</strong> 4 cuillières<br/>
-                                <strong>Sucre:</strong> 20g<br/>
-                                <strong>Glaçons:</strong> 2
-                            </div>
-                            <div class="col-6 lh-1 line-clamp">
+                            <ul class="col-6 list-unstyled js-recipe-ingredient-list">
+                                <li><strong>Thon Rouge (ou blanc):</strong> 200g</li>
+                                <li><strong>Concombre:</strong> 1</li>
+                                <li><strong>Tomate:</strong> 2</li>
+                                <li><strong>Citron Vert:</strong> 5</li>
+                                <li><strong>Lait de coco:</strong> 100ml</li>
+                            </ul>
+                            <div class="col-6 lh-1 line-clamp js-recipe-description">
                                 Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusantium, nostrum!
                             </div>
                         </div>
@@ -92,6 +92,9 @@
                 </div>
             </div>
         </div>
+    </template>
+
+    <div class="row g-4" id="recipes-container">
 
         <div class="col-4">
             <div class="card rounded border-0">
@@ -100,7 +103,7 @@
 
                     <div class="container-fluid g-3">
                         <div class="row lh-1 mb-1">
-                            <div class="col-auto">
+                            <div class="col-auto text-truncate">
                                 <h2 class="card-title">Poisson Cru à la tahitienne</h2>
                             </div>
                             <div class="col text-end">
@@ -108,13 +111,13 @@
                             </div>
                         </div>
                         <div class="row fs-6 lh-sm gx-2">
-                            <div class="col-6">
-                                <strong>Thon Rouge (ou blanc):</strong> 200g<br/>
-                                <strong>Concombre:</strong> 1<br/>
-                                <strong>Tomate:</strong> 2<br/>
-                                <strong>Citron Vert:</strong> 5<br/>
-                                <strong>Lait de coco:</strong> 100ml
-                            </div>
+                            <ul class="col-6 list-unstyled">
+                                <li><strong>Thon Rouge (ou blanc):</strong> 200g</li>
+                                <li><strong>Concombre:</strong> 1</li>
+                                <li><strong>Tomate:</strong> 2</li>
+                                <li><strong>Citron Vert:</strong> 5</li>
+                                <li><strong>Lait de coco:</strong> 100ml</li>
+                            </ul>
                             <div class="col-6 lh-1 line-clamp">
                                 Lorem ipsum dolor sit amet, consectetur adipisicing elit. A at corporis distinctio, explicabo fuga, fugit harum ipsum molestiae nihil praesentium quas qui repellendus sequi sit suscipit unde voluptatibus? Consequatur dignissimos dolores enim, maiores nemo nulla sint tempore! Amet ex excepturi fuga neque nobis. Assumenda ea, excepturi inventore itaque iusto maxime.
                             </div>

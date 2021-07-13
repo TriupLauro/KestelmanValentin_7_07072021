@@ -62,6 +62,38 @@ function clearContainer(container) {
     }
 }
 
+function includeReciteTemplate(recipe, container) {
+    const recipeTemplate = document.querySelector('#js-recipe-card');
+    const templateClone = recipeTemplate.content.cloneNode(true);
+    const recipeTitle = templateClone.querySelector('.js-recipe-title');
+    recipeTitle.textContent = recipe.name;
+    const recipeDuration = templateClone.querySelector('.js-recipe-duration');
+    recipeDuration.textContent = ` ${recipe.time} min`;
+
+    const recipeIngredientList = templateClone.querySelector('.js-recipe-ingredient-list');
+    clearContainer(recipeIngredientList);
+    for (let ingredient of recipe.ingredients) {
+        const item = document.createElement('li');
+        item.classList.add('text-truncate');
+        const ingredientNameElt = document.createElement('strong')
+        ingredientNameElt.textContent = ingredient.ingredient;
+        item.appendChild(ingredientNameElt);
+        if ('quantity' in ingredient) {
+            item.append(': ')
+            item.append(ingredient.quantity);
+            if ('unit' in ingredient) {
+                item.append(` ${ingredient.unit}`);
+            }
+        }
+        recipeIngredientList.appendChild(item);
+    }
+
+    const recipeDescription = templateClone.querySelector('.js-recipe-description');
+    recipeDescription.textContent = recipe.description;
+
+    container.appendChild(templateClone);
+}
+
 function displayRecipe(recipe, container) {
     const recipeCol = document.createElement('div');
     recipeCol.classList.add('col-4');
@@ -136,11 +168,15 @@ function displayRecipeSet(recipeSet,container) {
     recipeSet.forEach(recipe => displayRecipe(recipe,container));
 }
 
+function displayTemplateRecipeSet(recipeSet,container) {
+    recipeSet.forEach(recipe => includeReciteTemplate(recipe,container));
+}
+
 let inputTimer;
 
 function updateDisplayedRecipes(recipeSet, container = document.querySelector('#recipes-container')) {
     clearContainer(container);
-    displayRecipeSet(recipeSet,container);
+    displayTemplateRecipeSet(recipeSet,container);
 }
 
 function readInput(e) {
