@@ -38,7 +38,7 @@
         <div class="col-auto">
             <div class="dropdown">
                 <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownIngredients"
-                        data-bs-toggle="dropdown" aria-expanded="false" data-theme="primary">
+                        data-bs-toggle="dropdown" aria-expanded="false" data-theme="primary" data-inventory="ingredient">
                     Ingrédients
                 </button>
                 <ul class="dropdown-menu bg-primary rounded">
@@ -61,35 +61,41 @@
 
         <div class="col-auto">
             <div class="dropdown">
-                <button class="btn btn-success dropdown-toggle" type="button" id="dropdownAppareils" data-bs-toggle="dropdown" aria-expanded="false">
+                <button class="btn btn-success dropdown-toggle" type="button" id="dropdownAppareils"
+                        data-bs-toggle="dropdown" aria-expanded="false" data-theme="success" data-inventory="appliance">
                     Appareils
                 </button>
                 <ul class="dropdown-menu bg-success rounded">
                     <input type="text" class="bg-success w-100 dropdown-input" placeholder="Rechercher un appareil">
-                    <ul class="list-group list-group-horizontal">
-                        <li class="list-group-item dropdown-item bg-success">Blender</li>
-                        <li class="list-group-item dropdown-item bg-success">Saladier</li>
-                        <li class="list-group-item dropdown-item bg-success">Cocotte</li>
-                    </ul>
+                    <div class="inventory">
+                        <ul class="list-group list-group-horizontal">
+                            <li class="list-group-item dropdown-item bg-success">Blender</li>
+                            <li class="list-group-item dropdown-item bg-success">Saladier</li>
+                            <li class="list-group-item dropdown-item bg-success">Cocotte</li>
+                        </ul>
+                    </div>
                 </ul>
             </div>
         </div>
 
         <div class="col-auto">
             <div class="dropdown">
-                <button class="btn btn-danger dropdown-toggle" type="button" id="dropdownUstensiles" data-bs-toggle="dropdown" aria-expanded="false">
+                <button class="btn btn-danger dropdown-toggle" type="button" id="dropdownUstensiles"
+                        data-bs-toggle="dropdown" aria-expanded="false" data-theme="danger" data-inventory="ustensil">
                     Ustensiles
                 </button>
                 <ul class="dropdown-menu bg-danger rounded">
                     <input type="text" class="bg-danger w-100 dropdown-input" placeholder="Rechercher un ustensile">
-                    <ul class="list-group list-group-horizontal">
-                        <li class="list-group-item dropdown-item bg-danger">couteau</li>
-                        <li class="list-group-item dropdown-item bg-danger">presse citron</li>
-                        <li class="list-group-item dropdown-item bg-danger">verres</li>
-                    </ul>
-                    <ul class="list-group list-group-horizontal">
-                        <li class="list-group-item dropdown-item bg-danger">cuillière à soupe</li>
-                    </ul>
+                    <div class="inventory">
+                        <ul class="list-group list-group-horizontal">
+                            <li class="list-group-item dropdown-item bg-danger">couteau</li>
+                            <li class="list-group-item dropdown-item bg-danger">presse citron</li>
+                            <li class="list-group-item dropdown-item bg-danger">verres</li>
+                        </ul>
+                        <ul class="list-group list-group-horizontal">
+                            <li class="list-group-item dropdown-item bg-danger">cuillière à soupe</li>
+                        </ul>
+                    </div>
                 </ul>
             </div>
         </div>

@@ -3,31 +3,37 @@ import {recipes} from "./database/recipes.js";
 // Find the keyword in the recipe database
 
 function searchRecipeNames(keyword, recipes) {
-    return recipes.filter(recipe => recipe.name.toLowerCase().includes(keyword));
+    return recipes.filter(recipe => recipe.name.toLocaleLowerCase().includes(keyword));
 }
 
 function searchAppliance(keyword, recipes) {
-    return recipes.filter(recipe => recipe.appliance.toLowerCase().includes(keyword));
+    return recipes.filter(recipe => recipe.appliance.toLocaleLowerCase().includes(keyword));
 }
 
 function searchUstensils(keyword, recipes) {
     return recipes.filter(recipe => {
-        const ustensilsArray = recipe.ustensils;
-        for (let ustensil of ustensilsArray) {
-            if (ustensil.toLowerCase().includes(keyword)) {
-                return true;
-            }
-        }
-        return false;
+        return recipe.ustensils
+            .map(ustensil => ustensil.toLocaleLowerCase())
+            .some(ustensil => ustensil.includes(keyword))
     });
 }
 
 function getIngredientArray(recipe) {
-    return recipe.ingredients.map(item => item.ingredient.toLowerCase());
+    return recipe.ingredients.map(item => item.ingredient.toLocaleLowerCase());
 }
 
 function ingredientsInventory(recipes) {
     return new Set (recipes.map(recipe => getIngredientArray(recipe)).flat(1));
+}
+
+function applianceInventory(recipes) {
+    return new Set (recipes.map(recipe => recipe.appliance.toLocaleLowerCase()));
+}
+
+function ustensilsInventory(recipes) {
+    return new Set (recipes.map(recipe => recipe.ustensils
+        .map(u => u.toLocaleLowerCase()))
+        .flat(1));
 }
 
 function searchIngredients(keyword, recipes) {
@@ -52,7 +58,7 @@ function clearContainer(container) {
     }
 }
 
-function includeReciteTemplate(recipe, container) {
+function includeRecipeTemplate(recipe, container) {
     const recipeTemplate = document.querySelector('#js-recipe-card');
     const templateClone = recipeTemplate.content.cloneNode(true);
     const recipeTitle = templateClone.querySelector('.js-recipe-title');
@@ -84,82 +90,8 @@ function includeReciteTemplate(recipe, container) {
     container.appendChild(templateClone);
 }
 
-/*function displayRecipe(recipe, container) {
-    const recipeCol = document.createElement('div');
-    recipeCol.classList.add('col-4');
-    const recipeCard = document.createElement('div');
-    recipeCard.classList.add('card','rounded','border-0');
-    const cardPlaceholder = document.createElement('div');
-    cardPlaceholder.classList.add('card-placeholder');
-
-    const cardBody = document.createElement('div');
-    cardBody.classList.add('card-body','px-0');
-    const insideContainer = document.createElement('div');
-    insideContainer.classList.add('container-fluid','g-3');
-    const upperRow = document.createElement('div');
-    upperRow.classList.add('row','lh-1','mb-1');
-    const titleCol = document.createElement('div');
-    titleCol.classList.add('col-8');
-    const cardTitle = document.createElement('h2');
-    cardTitle.classList.add('card-title','text-truncate');
-    cardTitle.textContent = recipe.name;
-    const timeCol = document.createElement('div');
-    timeCol.classList.add('col','text-end');
-    const clockIcon = document.createElement('i');
-    clockIcon.classList.add('bi','bi-clock');
-    const timeElt = document.createElement('strong');
-    timeElt.classList.add('fs-2');
-    timeElt.textContent = ` ${recipe.time} min`;
-
-    const lowerRow = document.createElement('div');
-    lowerRow.classList.add('row','fs-6','lh-sm','gx-2');
-    const ingredientCol = document.createElement('div');
-    ingredientCol.classList.add('col-6','text-truncate');
-    for (let ingredient of recipe.ingredients) {
-        const item = document.createElement('strong');
-        item.textContent = ingredient.ingredient;
-        ingredientCol.appendChild(item);
-        if ('quantity' in ingredient) {
-            item.append(': ')
-            ingredientCol.append(ingredient.quantity);
-            if ('unit' in ingredient) {
-                ingredientCol.append(` ${ingredient.unit}`);
-            }
-        }
-        if (recipe.ingredients.indexOf(ingredient) !== recipe.ingredients.length - 1) {
-            ingredientCol.appendChild(document.createElement('br'));
-        }
-    }
-
-    const descriptionCol = document.createElement('div');
-    descriptionCol.classList.add('col-6','lh-1','line-clamp');
-    descriptionCol.textContent = recipe.description;
-
-    recipeCol.appendChild(recipeCard);
-    recipeCard.appendChild(cardPlaceholder);
-    recipeCard.appendChild(cardBody);
-    cardBody.appendChild(insideContainer);
-    insideContainer.appendChild(upperRow);
-    upperRow.appendChild(titleCol);
-    titleCol.appendChild(cardTitle);
-    upperRow.appendChild(timeCol);
-    timeCol.appendChild(clockIcon);
-    timeCol.appendChild(timeElt);
-
-    insideContainer.appendChild(lowerRow);
-    lowerRow.appendChild(ingredientCol);
-    lowerRow.appendChild(descriptionCol);
-
-    container.appendChild(recipeCol);
-
-}
-
-function displayRecipeSet(recipeSet,container) {
-    recipeSet.forEach(recipe => displayRecipe(recipe,container));
-}*/
-
 function displayTemplateRecipeSet(recipeSet,container) {
-    recipeSet.forEach(recipe => includeReciteTemplate(recipe,container));
+    recipeSet.forEach(recipe => includeRecipeTemplate(recipe,container));
 }
 
 let inputTimer;
@@ -183,8 +115,19 @@ function clickDropdown(e) {
     const dropDownMenu = e.target.nextSibling.nextSibling;
     const inventoryElt = dropDownMenu.querySelector('.inventory');
     const theme = e.target.dataset.theme;
+    const inventoryType = e.target.dataset.inventory;
+    const dropDownInput = dropDownMenu.querySelector('input');
+    dropDownInput.value = '';
+    const inventorySet = inventorySpecified(inventoryType)(recipes);
+    updateInventoryDisplay(inventoryElt,inventorySet,theme);
+}
+
+function updateInventoryDisplay(inventoryElt,inventoryFiltered,theme) {
     clearContainer(inventoryElt);
-    const inventorySet = ingredientsInventory(recipes);
+    appendFilteredInventory(inventoryFiltered,theme,inventoryElt);
+}
+
+function appendFilteredInventory(inventorySet,theme, inventoryElt) {
     let lastRow = addInventoryRow(inventoryElt);
     let index = 0;
     inventorySet.forEach(item => {
@@ -208,12 +151,44 @@ function addInventoryRow(inventoryElt) {
     return listRow;
 }
 
+function typeInventorySearch(e) {
+    const keyword = e.target.value;
+    const inventoryElt = e.target.nextSibling.nextSibling;
+    const parentBtn = e.target.parentElement.previousSibling.previousSibling;
+    const theme = parentBtn.dataset.theme;
+    const inventoryType = parentBtn.dataset.inventory;
+    const filteredInventory = [...inventorySpecified(inventoryType)(recipes)]
+        .filter(item => item.includes(keyword.toLocaleLowerCase()));
+    updateInventoryDisplay(inventoryElt,filteredInventory,theme);
+}
+
+function inventorySpecified(inventoryType) {
+    switch (inventoryType) {
+        case 'ingredient' :
+            return ingredientsInventory;
+        case 'appliance' :
+            return applianceInventory;
+        case 'ustensil' :
+            return ustensilsInventory;
+    }
+}
+
 window.addEventListener('load',() => {
     const recipeContainer = document.querySelector('#recipes-container');
     const mainSearch = document.querySelector('#main-search');
-    const ingredientsBtn = document.querySelector('#dropdownIngredients');
+    const dropDownToggle = document.querySelectorAll('.dropdown-toggle');
     clearContainer(recipeContainer);
     displayTemplateRecipeSet(recipes,recipeContainer);
+    dropDownToggle.forEach(btn => {
+        btn.addEventListener('click',clickDropdown);
+    });
+    dropDownToggle.forEach(btn => {
+        const dropDownMenu = btn.nextSibling.nextSibling;
+        dropDownMenu.querySelector('input').addEventListener('input', typeInventorySearch);
+    });
     mainSearch.addEventListener('input',readInput);
-    ingredientsBtn.addEventListener('click', clickDropdown);
+    /*ingredientsBtn.addEventListener('click', clickDropdown);
+    ingredientInput.addEventListener('input', typeInventorySearch);
+    applianceBtn.addEventListener('click', clickDropdown);
+    applianceInput.addEventListener('input', typeInventorySearch);*/
 });
