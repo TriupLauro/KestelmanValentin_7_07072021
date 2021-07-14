@@ -35,6 +35,14 @@
 
 .dropdown-toggle {
   height: 4.25rem;
+  box-shadow: none;
+  overflow: hidden;
+}
+
+.dropdown-toggle.show {
+  width: 41.25rem;
+  text-align: end;
+  box-shadow: none;
 }
 
 .dropdown-toggle::after{
@@ -46,6 +54,37 @@
   height: 0.7rem;
   transform: rotate(-45deg);
   margin-left: 2rem;
+  transition: transform 300ms;
+  //So it stays on top of expanded dropdown
+  position: relative;
+  z-index: 1001;
+}
+
+.dropdown-toggle.show::after {
+  transform: rotate(135deg);
+}
+
+.dropdown-input {
+  height: 4.25rem;
+  padding-left: 1rem;
+  color: white;
+  border: none;
+  &:focus {
+    outline: none;
+  }
+}
+
+.list-group-horizontal {
+  width: 41.25rem;
+  .list-group-item {
+    width: 13.75rem;
+  }
+}
+
+.dropdown-menu {
+  //We need to override the inline style injected by Bootstrap with JavaScript
+  margin-top: -4.375rem !important;
+  margin-left: -0.05rem !important;
 }
 
 //.bi-clock {
