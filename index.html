@@ -27,7 +27,7 @@
 
     <div class="row">
         <div class="col">
-            <div class="alert alert-primary alert-dismissible fade show d-inline-block">
+            <div class="alert alert-primary alert-dismissible fade show d-inline-block fw-bold">
                 Coco
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="close"></button>
             </div>
@@ -37,21 +37,24 @@
     <div class="row mb-4">
         <div class="col-auto">
             <div class="dropdown">
-                <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownIngredients" data-bs-toggle="dropdown" aria-expanded="false">
+                <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownIngredients"
+                        data-bs-toggle="dropdown" aria-expanded="false" data-theme="primary">
                     Ingrédients
                 </button>
                 <ul class="dropdown-menu bg-primary rounded">
                     <input type="text" class="bg-primary w-100 dropdown-input" placeholder="Rechercher un ingrédient">
-                    <ul class="list-group list-group-horizontal">
-                        <li class="list-group-item dropdown-item bg-primary">Lait de coco</li>
-                        <li class="list-group-item dropdown-item bg-primary">Jus de citron</li>
-                        <li class="list-group-item dropdown-item bg-primary">Crème de coco</li>
-                    </ul>
-                    <ul class="list-group list-group-horizontal">
-                        <li class="list-group-item dropdown-item bg-primary">Lait de coco</li>
-                        <li class="list-group-item dropdown-item bg-primary">Jus de citron</li>
-                        <li class="list-group-item dropdown-item bg-primary">Crème de coco</li>
-                    </ul>
+                    <div class="inventory">
+                        <ul class="list-group list-group-horizontal">
+                            <li class="list-group-item dropdown-item bg-primary">Lait de coco</li>
+                            <li class="list-group-item dropdown-item bg-primary">Jus de citron</li>
+                            <li class="list-group-item dropdown-item bg-primary">Crème de coco</li>
+                        </ul>
+                        <ul class="list-group list-group-horizontal">
+                            <li class="list-group-item dropdown-item bg-primary">Lait de coco</li>
+                            <li class="list-group-item dropdown-item bg-primary">Jus de citron</li>
+                            <li class="list-group-item dropdown-item bg-primary">Crème de coco</li>
+                        </ul>
+                    </div>
                 </ul>
             </div>
         </div>
@@ -226,7 +229,8 @@
     </div>
 </div>
 
-<script type="module" src="research.js"></script>
+
 <script src="node_modules/bootstrap/dist/js/bootstrap.bundle.js"></script>
+<script type="module" src="research.js"></script>
 </body>
 </html>

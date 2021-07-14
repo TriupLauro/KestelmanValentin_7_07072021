@@ -11665,19 +11665,15 @@ h1, .h1 {
   color: white;
   font-weight: bold;
 }
+.btn:hover {
+  color: white;
+}
 
 .dropdown-toggle {
   height: 4.25rem;
   box-shadow: none;
   overflow: hidden;
 }
-
-.dropdown-toggle.show {
-  width: 41.25rem;
-  text-align: end;
-  box-shadow: none;
-}
-
 .dropdown-toggle::after {
   border-top: 0;
   border-right: 0;
@@ -11692,6 +11688,11 @@ h1, .h1 {
   z-index: 1001;
 }
 
+.dropdown-toggle.show {
+  width: 41.25rem;
+  text-align: end;
+  box-shadow: none;
+}
 .dropdown-toggle.show::after {
   transform: rotate(135deg);
 }
@@ -11717,5 +11718,16 @@ h1, .h1 {
   margin-top: -4.375rem !important;
   margin-left: -0.05rem !important;
 }
+
+/*
+path {
+  stroke-width: 1px;
+  stroke: white;
+}
+
+.bi-clock::before path {
+  stroke-width: 1px;
+  stroke: black;
+}*/
 
 /*# sourceMappingURL=style.css.map */

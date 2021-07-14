@@ -31,37 +31,38 @@
 .btn {
   color: white;
   font-weight: bold;
+  &:hover {
+    color: white;
+  }
 }
 
 .dropdown-toggle {
   height: 4.25rem;
   box-shadow: none;
   overflow: hidden;
+  &::after {
+    border-top: 0;
+    border-right: 0;
+    border-left: 0.2rem solid white;
+    border-bottom: 0.2rem solid white;
+    width: 0.7rem;
+    height: 0.7rem;
+    transform: rotate(-45deg);
+    margin-left: 2rem;
+    transition: transform 300ms;
+    //So it stays on top of expanded dropdown
+    position: relative;
+    z-index: 1001;
+  }
 }
 
 .dropdown-toggle.show {
   width: 41.25rem;
   text-align: end;
   box-shadow: none;
-}
-
-.dropdown-toggle::after{
-  border-top: 0;
-  border-right: 0;
-  border-left: 0.2rem solid white;
-  border-bottom: 0.2rem solid white;
-  width: 0.7rem;
-  height: 0.7rem;
-  transform: rotate(-45deg);
-  margin-left: 2rem;
-  transition: transform 300ms;
-  //So it stays on top of expanded dropdown
-  position: relative;
-  z-index: 1001;
-}
-
-.dropdown-toggle.show::after {
-  transform: rotate(135deg);
+  &::after {
+    transform: rotate(135deg);
+  }
 }
 
 .dropdown-input {
@@ -87,7 +88,14 @@
   margin-left: -0.05rem !important;
 }
 
-//.bi-clock {
-//  font-size: 1.25rem;
-//  line-height: 1.25rem;
-//}
+//Making the SVG icons thicker
+/*
+path {
+  stroke-width: 1px;
+  stroke: white;
+}
+
+.bi-clock::before path {
+  stroke-width: 1px;
+  stroke: black;
+}*/
