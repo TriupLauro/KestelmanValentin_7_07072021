@@ -2,6 +2,7 @@ import {recipes} from "./database/recipes.js";
 
 // Find the keyword in the recipe database
 
+//To include in benchmark (also include the database)
 function searchRecipeNames(keyword, recipes) {
     return recipes.filter(recipe => recipe.name.toLocaleLowerCase().includes(keyword));
 }
@@ -18,24 +19,6 @@ function searchUstensils(keyword, recipes) {
     });
 }
 
-function getIngredientArray(recipe) {
-    return recipe.ingredients.map(item => item.ingredient.toLocaleLowerCase());
-}
-
-function ingredientsInventory(recipes) {
-    return new Set (recipes.map(recipe => getIngredientArray(recipe)).flat(1));
-}
-
-function applianceInventory(recipes) {
-    return new Set (recipes.map(recipe => recipe.appliance.toLocaleLowerCase()));
-}
-
-function ustensilsInventory(recipes) {
-    return new Set (recipes.map(recipe => recipe.ustensils
-        .map(u => u.toLocaleLowerCase()))
-        .flat(1));
-}
-
 function searchIngredients(keyword, recipes) {
     return recipes.filter(recipe => {
         return getIngredientArray(recipe)
@@ -50,6 +33,26 @@ function searchAll(keyword, recipes) {
         searchAppliance(keyword,recipes),
         searchIngredients(keyword,recipes)
     ].flat(1));
+}
+
+function getIngredientArray(recipe) {
+    return recipe.ingredients.map(item => item.ingredient.toLocaleLowerCase());
+}
+
+//End of code to benchmark
+
+function ingredientsInventory(recipes) {
+    return new Set (recipes.map(recipe => getIngredientArray(recipe)).flat(1));
+}
+
+function applianceInventory(recipes) {
+    return new Set (recipes.map(recipe => recipe.appliance.toLocaleLowerCase()));
+}
+
+function ustensilsInventory(recipes) {
+    return new Set (recipes.map(recipe => recipe.ustensils
+        .map(u => u.toLocaleLowerCase()))
+        .flat(1));
 }
 
 function clearContainer(container) {
