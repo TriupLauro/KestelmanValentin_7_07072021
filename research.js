@@ -11,6 +11,10 @@ function searchAppliance(keyword, recipes) {
     return recipes.filter(recipe => recipe.appliance.toLocaleLowerCase().includes(keyword));
 }
 
+function searchDescription(keyword, recipes) {
+    return recipes.filter(recipe => recipe.description.toLocaleLowerCase().includes(keyword));
+}
+
 function searchUstensils(keyword, recipes) {
     return recipes.filter(recipe => {
         return recipe.ustensils
@@ -31,7 +35,8 @@ function searchAll(keyword, recipes) {
         searchRecipeNames(keyword,recipes),
         searchUstensils(keyword,recipes),
         searchAppliance(keyword,recipes),
-        searchIngredients(keyword,recipes)
+        searchIngredients(keyword,recipes),
+        searchDescription(keyword, recipes)
     ].flat(1));
 }
 

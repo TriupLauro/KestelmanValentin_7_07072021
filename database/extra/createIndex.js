@@ -4,6 +4,7 @@ const db = require('./recipes');
 const object = db.recipes;
 
 const gramMap = new Map();
+const gramObject = {};
 
 function processWord(word) {
     res = word.toLocaleLowerCase();
@@ -48,17 +49,29 @@ for (let item of object) {
     words.push(description);
 
     words = words.flat(1);
-    console.log(words)
 
     for (let n = 3; n <= 13; n++) {
         for (let word of words) {
             if (word.length >= n) {
                 for (let characterIndex = 0; characterIndex < word.length - n + 1; characterIndex++) {
                     let ngram = word.slice(characterIndex, characterIndex + n);
+                    //console.log(ngram);
                     if (gramMap.has(ngram)) {
                         gramMap.get(ngram).add(item.id);
                     } else {
                         gramMap.set(ngram, new Set([item.id]));
+                    }
+                    //console.log('checking...');
+                    if (ngram in gramObject) {
+                        //console.log('Checking in existing array');
+                        //console.log('Starting array : ', gramObject[ngram]);
+                        if (!gramObject[ngram].includes(item.id)) {
+                            //console.log('Adding...');
+                            gramObject[ngram].push(item.id);
+                        }
+                    } else {
+                        //console.log('Creating');
+                        gramObject[ngram] = [item.id];
                     }
                 }
             }
@@ -66,5 +79,14 @@ for (let item of object) {
     }
 }
 
-console.log(gramMap);
+console.log('Index généré');
 
+const stringData = JSON.stringify(gramObject,null,4);
+
+fs.writeFile('index.js', stringData, (err) => {
+    if (err) throw err;
+    console.log('Fichier écrit !');
+});
+
+//console.log(gramMap);
+//console.log(gramMap.size);
