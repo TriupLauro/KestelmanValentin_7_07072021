@@ -3,6 +3,10 @@ import {recipes} from "./database/recipes.js";
 // Find the keyword in the recipe database
 
 //To include in benchmark (also include the database)
+function searchDescription(keyword, recipes) {
+    return recipes.filter(recipe => recipe.description.toLocaleLowerCase().includes(keyword));
+}
+
 function searchRecipeNames(keyword, recipes) {
     return recipes.filter(recipe => recipe.name.toLocaleLowerCase().includes(keyword));
 }
@@ -31,7 +35,8 @@ function searchAll(keyword, recipes) {
         searchRecipeNames(keyword,recipes),
         searchUstensils(keyword,recipes),
         searchAppliance(keyword,recipes),
-        searchIngredients(keyword,recipes)
+        searchIngredients(keyword,recipes),
+        searchDescription(keyword, recipes)
     ].flat(1));
 }
 
