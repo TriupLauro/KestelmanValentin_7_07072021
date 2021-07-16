@@ -42,7 +42,7 @@ function searchUstensils(keyword, recipes) {
     return recipes.filter(recipe => {
         return recipe.ustensils
             .map(ustensil => ustensil.toLocaleLowerCase())
-            .some(ustensil => ustensil.includes(keyword))
+            .some(ustensil => ustensil.includes(keyword));
     });
 }
 
@@ -66,6 +66,23 @@ function searchAll(keyword, recipes) {
 function getIngredientArray(recipe) {
     return recipe.ingredients.map(item => item.ingredient.toLocaleLowerCase());
 }
+
+//To run in the benchmark
+//Full text
+/*
+searchAll('chocolat',recipes);
+searchAll('banane',recipes);
+searchAll('sau',recipes);
+searchAll('jfghj',recipes);
+*/
+
+//Using nmgram index
+/*
+searchRecipeFromIndex(['chocolat'],index,recipes);
+searchRecipeFromIndex(['banane'],index,recipes);
+searchRecipeFromIndex(['sau'],index,recipes);
+searchRecipeFromIndex(['jfghj'],index,recipes);
+*/
 
 //End of code to benchmark
 
