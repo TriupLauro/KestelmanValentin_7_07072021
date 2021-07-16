@@ -1,4 +1,4 @@
-export const index = {
+export const nmgram = {
     "180": [
         8,
         25,

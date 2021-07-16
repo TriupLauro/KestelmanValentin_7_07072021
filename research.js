@@ -1,10 +1,10 @@
 import {recipes} from "./database/recipes.js";
-import {index} from "./database/index.js";
+import {nmgram} from "./database/nmgram.js";
 
 // Find the keyword in the recipe database
 
-// To include in benchmark (also include the database and index)
-// Search using the index
+// To include in benchmark (also include the database and nmgram)
+// Search using the nmgram
 function getIdsFromIndex(keyword, index) {
     return index[keyword.toLocaleLowerCase()];
 }
@@ -54,6 +54,7 @@ function searchIngredients(keyword, recipes) {
 }
 
 function searchAll(keyword, recipes) {
+    keyword = keyword.toLocaleLowerCase();
     return new Set([
         searchRecipeNames(keyword,recipes),
         searchUstensils(keyword,recipes),
@@ -76,12 +77,12 @@ searchAll('sau',recipes);
 searchAll('jfghj',recipes);
 */
 
-//Using nmgram index
+//Using nmgram nmgram
 /*
-searchRecipeFromIndex(['chocolat'],index,recipes);
-searchRecipeFromIndex(['banane'],index,recipes);
-searchRecipeFromIndex(['sau'],index,recipes);
-searchRecipeFromIndex(['jfghj'],index,recipes);
+searchRecipeFromIndex(['chocolat'],nmgram,recipes);
+searchRecipeFromIndex(['banane'],nmgram,recipes);
+searchRecipeFromIndex(['sau'],nmgram,recipes);
+searchRecipeFromIndex(['jfghj'],nmgram,recipes);
 */
 
 //End of code to benchmark
@@ -142,31 +143,39 @@ function displayTemplateRecipeSet(recipeSet,container) {
     recipeSet.forEach(recipe => includeRecipeTemplate(recipe,container));
 }
 
-let inputTimer;
-
 function updateDisplayedRecipes(recipeSet, container = document.querySelector('#recipes-container')) {
     clearContainer(container);
     displayTemplateRecipeSet(recipeSet,container);
 }
 
-function readInput(e) {
-    window.clearTimeout(inputTimer);
-    if (e.target.value.length >= 3) {
-        const resultsSet = searchAll(e.target.value.toLowerCase(),recipes);
-        inputTimer = window.setTimeout(updateDisplayedRecipes,500,resultsSet);
-    }else{
-        inputTimer = window.setTimeout(updateDisplayedRecipes,500,recipes);
-    }
-}
+// The promise is just a way of waiting while blocking execution
+
+let inputTimer;
 
 async function readInputIndex(e) {
     window.clearTimeout(inputTimer);
-    if (e.target.value.length >= 3) {
+    await new Promise((resolve,reject) => {
+        resolve(inputTimer = setTimeout(inputResponse,500,e));
+    });
+}
+
+async function inputResponse(e) {
+    const characterLength = e.target.value.length;
+    if (characterLength >= 3 && characterLength <= 13) {
         const wordsArray = e.target.value.split(' ');
-        const resultsSet = searchRecipeFromIndex(wordsArray,index,recipes);
-        inputTimer = window.setTimeout(updateDisplayedRecipes,500,resultsSet);
-    }else{
-        inputTimer = window.setTimeout(updateDisplayedRecipes,500,recipes);
+        const resultsSet = await searchRecipeFromIndex(wordsArray,nmgram,recipes);
+        await new Promise(r => setTimeout(r,500));
+        updateDisplayedRecipes(resultsSet);
+    }else if (characterLength >= 14) {
+        const resultSet = await searchAll(e.target.value, recipes)
+        await new Promise(r => setTimeout(r,500));
+        updateDisplayedRecipes(resultSet);
+    }else if (characterLength < 3 && characterLength >= 1) {
+        await new Promise(r => setTimeout(r,500));
+        updateDisplayedRecipes([]);
+    }else if (characterLength === 0) {
+        await new Promise(r => setTimeout(r,500));
+        updateDisplayedRecipes(recipes);
     }
 }
 
@@ -240,8 +249,8 @@ window.addEventListener('load',() => {
     displayTemplateRecipeSet(recipes,recipeContainer);
     mainSearch.addEventListener('input',readInputIndex);
 
-    //console.log(getIdsFromIndex('sucre',index));
-    //console.log(searchRecipeFromIndex(['poulet','cho','suc'],index,recipes));
+    //console.log(getIdsFromIndex('sucre',nmgram));
+    //console.log(searchRecipeFromIndex(['poulet','cho','suc'],nmgram,recipes));
 
     //Event listeners for the advanced filters
     dropDownToggle.forEach(btn => {
