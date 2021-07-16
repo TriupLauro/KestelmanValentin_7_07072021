@@ -1,8 +1,31 @@
 import {recipes} from "./database/recipes.js";
+import {index} from "./database/index.js";
 
 // Find the keyword in the recipe database
 
-//To include in benchmark (also include the database)
+// To include in benchmark (also include the database and index)
+// Search using the index
+function getIdsFromIndex(keyword, index) {
+    return index[keyword.toLocaleLowerCase()];
+}
+
+function getIdsIntersection(wordArray,index) {
+    let IdsIntersection = [...Array(51).keys()].slice(1);
+    for (let word of wordArray) {
+        const IdsSubArray = getIdsFromIndex(word,index);
+        if (!IdsSubArray) return [];
+        IdsIntersection = IdsIntersection.filter(id => IdsSubArray.includes(id));
+    }
+    return IdsIntersection;
+}
+
+function searchRecipeFromIndex(wordArray,index,recipes) {
+    const IdsArray = getIdsIntersection(wordArray,index);
+    return recipes.filter(recipe => IdsArray.includes(recipe.id));
+}
+
+// To include in benchmark (also include the database)
+// Full text search
 function searchRecipeNames(keyword, recipes) {
     return recipes.filter(recipe => recipe.name.toLocaleLowerCase().includes(keyword));
 }
@@ -119,6 +142,17 @@ function readInput(e) {
     }
 }
 
+async function readInputIndex(e) {
+    window.clearTimeout(inputTimer);
+    if (e.target.value.length >= 3) {
+        const wordsArray = e.target.value.split(' ');
+        const resultsSet = searchRecipeFromIndex(wordsArray,index,recipes);
+        inputTimer = window.setTimeout(updateDisplayedRecipes,500,resultsSet);
+    }else{
+        inputTimer = window.setTimeout(updateDisplayedRecipes,500,recipes);
+    }
+}
+
 function clickDropdown(e) {
     const dropDownMenu = e.target.nextSibling.nextSibling;
     const inventoryElt = dropDownMenu.querySelector('.inventory');
@@ -187,6 +221,12 @@ window.addEventListener('load',() => {
     const dropDownToggle = document.querySelectorAll('.dropdown-toggle');
     clearContainer(recipeContainer);
     displayTemplateRecipeSet(recipes,recipeContainer);
+    mainSearch.addEventListener('input',readInputIndex);
+
+    //console.log(getIdsFromIndex('sucre',index));
+    //console.log(searchRecipeFromIndex(['poulet','cho','suc'],index,recipes));
+
+    //Event listeners for the advanced filters
     dropDownToggle.forEach(btn => {
         btn.addEventListener('click',clickDropdown);
     });
@@ -194,9 +234,4 @@ window.addEventListener('load',() => {
         const dropDownMenu = btn.nextSibling.nextSibling;
         dropDownMenu.querySelector('input').addEventListener('input', typeInventorySearch);
     });
-    mainSearch.addEventListener('input',readInput);
-    /*ingredientsBtn.addEventListener('click', clickDropdown);
-    ingredientInput.addEventListener('input', typeInventorySearch);
-    applianceBtn.addEventListener('click', clickDropdown);
-    applianceInput.addEventListener('input', typeInventorySearch);*/
 });
