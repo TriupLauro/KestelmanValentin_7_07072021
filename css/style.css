@@ -11660,6 +11660,16 @@ h1, .h1 {
   background-color: #3282F7;
 }
 
+.alert-success {
+  color: white;
+  background-color: #68D9A4;
+}
+
+.alert-danger {
+  color: white;
+  background-color: #ED6454;
+}
+
 .alert {
   font-size: 0.875rem;
   height: 2.25rem;

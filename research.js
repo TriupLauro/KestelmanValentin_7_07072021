@@ -208,7 +208,7 @@ function updateInventoryDisplay(inventoryElt,inventoryFiltered,theme) {
 }
 
 function appendFilteredInventory(inventorySet,theme, inventoryElt) {
-    let lastRow = addInventoryRow(inventoryElt);
+    let lastRow;
     let index = 0;
     inventorySet.forEach(item => {
         if (index % 3 === 0) lastRow = addInventoryRow(inventoryElt);
@@ -221,6 +221,7 @@ function addInventoryItem(inventoryItem,row,theme) {
     const inventoryItemElt = document.createElement('ul');
     inventoryItemElt.classList.add('list-group-item','dropdown-item',`bg-${theme}`, 'text-truncate', 'text-capitalize');
     inventoryItemElt.textContent = inventoryItem;
+    inventoryItemElt.addEventListener('click', clickInventoryItem);
     row.appendChild(inventoryItemElt);
 }
 
@@ -229,6 +230,28 @@ function addInventoryRow(inventoryElt) {
     listRow.classList.add('list-group','list-group-horizontal');
     inventoryElt.appendChild(listRow);
     return listRow;
+}
+
+function addAlertTag(item,theme,inventoryType,alertContainer,
+                     alertTemplate = document.querySelector('#js-tag')) {
+    const templateClone = alertTemplate.content.cloneNode(true);
+    const alertElt = templateClone.querySelector('div.alert');
+    alertElt.classList.add(`alert-${theme}`);
+    const keywordElt = templateClone.querySelector('span.tag-text');
+    keywordElt.textContent = item;
+    alertContainer.appendChild(templateClone);
+}
+
+function clickInventoryItem(e) {
+    const item = e.target.textContent;
+    const parentBtn = e.target.parentElement.parentElement.parentElement.previousSibling.previousSibling;
+    const theme = parentBtn.dataset.theme;
+    const inventoryType = parentBtn.dataset.inventory;
+    const alertContainer = document.querySelector('.js-tag-container');
+    //console.log(item);
+    //console.log(theme);
+    //console.log(inventoryType);
+    addAlertTag(item,theme,inventoryType,alertContainer);
 }
 
 function typeInventorySearch(e) {
