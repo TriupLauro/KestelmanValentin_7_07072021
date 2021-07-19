@@ -107,8 +107,10 @@ function clearContainer(container) {
     }
 }
 
-function includeRecipeTemplate(recipe, container) {
-    const recipeTemplate = document.querySelector('#js-recipe-card');
+//Clone the recipe card template and modify content to fit the recipe
+//passed as an argument and append it in the container
+function includeRecipeTemplate(recipe, container,recipeTemplate) {
+
     const templateClone = recipeTemplate.content.cloneNode(true);
     const recipeTitle = templateClone.querySelector('.js-recipe-title');
     recipeTitle.textContent = recipe.name;
@@ -139,13 +141,23 @@ function includeRecipeTemplate(recipe, container) {
     container.appendChild(templateClone);
 }
 
-function displayTemplateRecipeSet(recipeSet,container) {
-    recipeSet.forEach(recipe => includeRecipeTemplate(recipe,container));
+function displayTemplateRecipeSet(recipeSet,container,template) {
+    recipeSet.forEach(recipe => includeRecipeTemplate(recipe,container,template));
 }
 
-function updateDisplayedRecipes(recipeSet, container = document.querySelector('#recipes-container')) {
+function updateDisplayedRecipes(recipeSet,
+                                container = document.querySelector('#recipes-container'),
+                                template = document.querySelector('#js-recipe-card')) {
     clearContainer(container);
-    displayTemplateRecipeSet(recipeSet,container);
+    displayTemplateRecipeSet(recipeSet,container,template);
+}
+
+function displaySearchMessage(message, container = document.querySelector('#recipes-container')) {
+    const messageElt = document.createElement('div');
+    messageElt.classList.add('search-hint');
+    messageElt.textContent = message;
+    clearContainer(container);
+    container.appendChild(messageElt);
 }
 
 // The promise is just a way of waiting while blocking execution
@@ -154,7 +166,7 @@ let inputTimer;
 
 async function readInputIndex(e) {
     window.clearTimeout(inputTimer);
-    await new Promise((resolve,reject) => {
+    await new Promise((resolve) => {
         resolve(inputTimer = setTimeout(inputResponse,500,e));
     });
 }
@@ -172,7 +184,7 @@ async function inputResponse(e) {
         updateDisplayedRecipes(resultSet);
     }else if (characterLength < 3 && characterLength >= 1) {
         await new Promise(r => setTimeout(r,500));
-        updateDisplayedRecipes([]);
+        displaySearchMessage('Veuillez entrer au moins trois caractères')
     }else if (characterLength === 0) {
         await new Promise(r => setTimeout(r,500));
         updateDisplayedRecipes(recipes);
@@ -245,8 +257,9 @@ window.addEventListener('load',() => {
     const recipeContainer = document.querySelector('#recipes-container');
     const mainSearch = document.querySelector('#main-search');
     const dropDownToggle = document.querySelectorAll('.dropdown-toggle');
+    const recipeTemplate = document.querySelector('#js-recipe-card')
     clearContainer(recipeContainer);
-    displayTemplateRecipeSet(recipes,recipeContainer);
+    displayTemplateRecipeSet(recipes,recipeContainer,recipeTemplate);
     mainSearch.addEventListener('input',readInputIndex);
 
     //console.log(getIdsFromIndex('sucre',nmgram));
