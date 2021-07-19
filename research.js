@@ -173,6 +173,7 @@ async function readInputIndex(e) {
 
 async function inputResponse(e) {
     const characterLength = e.target.value.length;
+    updateFilteredRecipes(false);
     if (characterLength >= 3 && characterLength <= 13) {
         const wordsArray = e.target.value.split(' ');
         const resultsSet = await searchRecipeFromIndex(wordsArray,nmgram,filteredRecipes);
@@ -180,20 +181,16 @@ async function inputResponse(e) {
         await new Promise(r => setTimeout(r,500));
         updateDisplayedRecipes(resultsSet);
         if (resultsSet.length === 0) {
-            //console.log('Aucune recette trouvée');
             displaySearchMessage('Aucune recette trouvée, essayez de chercher <<brownie>>, <<salade de riz>>...');
-            updateFilteredRecipes(false);
         }
     }else if (characterLength >= 14) {
         const resultSet = await searchAll(e.target.value, filteredRecipes)
         await new Promise(r => setTimeout(r,500));
         if (resultSet.size === 0) {
-            //console.log('Aucune recette trouvée');
             displaySearchMessage('Aucune recette trouvée, essayez de chercher <<brownie>>, <<salade de riz>>...')
         }else{
             updateDisplayedRecipes(resultSet);
         }
-        updateFilteredRecipes(false);
     }else if (characterLength < 3 && characterLength >= 1) {
         await new Promise(r => setTimeout(r,500));
         displaySearchMessage('Veuillez entrer au moins trois caractères')
