@@ -1,6 +1,6 @@
 import {recipes} from "./database/recipes.js";
 import {nmgram} from "./database/nmgram.js";
-
+let filteredRecipes = recipes;
 // Find the keyword in the recipe database
 
 // To include in benchmark (also include the database and nmgram)
@@ -175,19 +175,32 @@ async function inputResponse(e) {
     const characterLength = e.target.value.length;
     if (characterLength >= 3 && characterLength <= 13) {
         const wordsArray = e.target.value.split(' ');
-        const resultsSet = await searchRecipeFromIndex(wordsArray,nmgram,recipes);
+        const resultsSet = await searchRecipeFromIndex(wordsArray,nmgram,filteredRecipes);
+        filteredRecipes = resultsSet;
         await new Promise(r => setTimeout(r,500));
         updateDisplayedRecipes(resultsSet);
+        if (resultsSet.length === 0) {
+            //console.log('Aucune recette trouvée');
+            displaySearchMessage('Aucune recette trouvée, essayez de chercher <<brownie>>, <<salade de riz>>...');
+            updateFilteredRecipes(false);
+        }
     }else if (characterLength >= 14) {
-        const resultSet = await searchAll(e.target.value, recipes)
+        const resultSet = await searchAll(e.target.value, filteredRecipes)
         await new Promise(r => setTimeout(r,500));
-        updateDisplayedRecipes(resultSet);
+        if (resultSet.size === 0) {
+            //console.log('Aucune recette trouvée');
+            displaySearchMessage('Aucune recette trouvée, essayez de chercher <<brownie>>, <<salade de riz>>...')
+        }else{
+            updateDisplayedRecipes(resultSet);
+        }
+        updateFilteredRecipes(false);
     }else if (characterLength < 3 && characterLength >= 1) {
         await new Promise(r => setTimeout(r,500));
         displaySearchMessage('Veuillez entrer au moins trois caractères')
     }else if (characterLength === 0) {
         await new Promise(r => setTimeout(r,500));
-        updateDisplayedRecipes(recipes);
+        updateFilteredRecipes();
+        updateDisplayedRecipes(filteredRecipes);
     }
 }
 
@@ -198,7 +211,7 @@ function clickDropdown(e) {
     const inventoryType = e.target.dataset.inventory;
     const dropDownInput = dropDownMenu.querySelector('input');
     dropDownInput.value = '';
-    const inventorySet = inventorySpecified(inventoryType)(recipes);
+    const inventorySet = inventorySpecified(inventoryType)(filteredRecipes);
     updateInventoryDisplay(inventoryElt,inventorySet,theme);
 }
 
@@ -232,14 +245,56 @@ function addInventoryRow(inventoryElt) {
     return listRow;
 }
 
+function updateFilteredRecipes(resetMainInput = true) {
+    const alertTags = document.querySelectorAll('.js-keyword-tag');
+    const ingredientsTags = [];
+    const ustensilTags = [];
+    const applianceTags = [];
+    const mainSearchInput = document.querySelector('#main-search');
+    alertTags.forEach(tagElt => {
+        if (tagElt.dataset.inventory === 'ingredient') {
+            ingredientsTags.push(tagElt.querySelector('.tag-text').textContent);
+        }
+        if (tagElt.dataset.inventory === 'ustensil') {
+            ustensilTags.push(tagElt.querySelector('.tag-text').textContent);
+        }
+        if (tagElt.dataset.inventory === 'appliance') {
+            applianceTags.push(tagElt.querySelector('.tag-text').textContent);
+        }
+    });
+    filteredRecipes = recipes;
+
+    ingredientsTags.forEach(keyword => {
+        filteredRecipes = searchIngredients(keyword, filteredRecipes);
+    });
+    ustensilTags.forEach(keyword => {
+        filteredRecipes = searchUstensils(keyword, filteredRecipes);
+    });
+    applianceTags.forEach(keyword => {
+        filteredRecipes = searchAppliance(keyword, filteredRecipes);
+    });
+    if (resetMainInput) {
+        mainSearchInput.value = '';
+        updateDisplayedRecipes(filteredRecipes);
+    }
+}
+
+function updateFiltersAfterClose() {
+    setTimeout(updateFilteredRecipes,500);
+}
+
 function addAlertTag(item,theme,inventoryType,alertContainer,
                      alertTemplate = document.querySelector('#js-tag')) {
     const templateClone = alertTemplate.content.cloneNode(true);
     const alertElt = templateClone.querySelector('div.alert');
     alertElt.classList.add(`alert-${theme}`);
+    alertElt.dataset.inventory = inventoryType;
     const keywordElt = templateClone.querySelector('span.tag-text');
     keywordElt.textContent = item;
+    const alertCloseBtn = templateClone.querySelector('button.btn-close');
+    alertCloseBtn.addEventListener('click',updateFiltersAfterClose);
     alertContainer.appendChild(templateClone);
+    updateFilteredRecipes();
 }
 
 function clickInventoryItem(e) {
@@ -248,9 +303,6 @@ function clickInventoryItem(e) {
     const theme = parentBtn.dataset.theme;
     const inventoryType = parentBtn.dataset.inventory;
     const alertContainer = document.querySelector('.js-tag-container');
-    //console.log(item);
-    //console.log(theme);
-    //console.log(inventoryType);
     addAlertTag(item,theme,inventoryType,alertContainer);
 }
 
@@ -284,9 +336,6 @@ window.addEventListener('load',() => {
     clearContainer(recipeContainer);
     displayTemplateRecipeSet(recipes,recipeContainer,recipeTemplate);
     mainSearch.addEventListener('input',readInputIndex);
-
-    //console.log(getIdsFromIndex('sucre',nmgram));
-    //console.log(searchRecipeFromIndex(['poulet','cho','suc'],nmgram,recipes));
 
     //Event listeners for the advanced filters
     dropDownToggle.forEach(btn => {
