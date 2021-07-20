@@ -11721,6 +11721,10 @@ h1, .h1 {
 .dropdown-input:focus {
   outline: none;
 }
+.dropdown-input::placeholder {
+  color: white;
+  opacity: 0.5;
+}
 
 .list-group-horizontal {
   width: 41.25rem;
@@ -11732,6 +11736,12 @@ h1, .h1 {
 .dropdown-menu {
   margin-top: -4.375rem !important;
   margin-left: -0.05rem !important;
+  max-height: 40rem;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+.dropdown-menu::-webkit-scrollbar {
+  width: 0.1rem;
 }
 
 /*

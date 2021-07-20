@@ -88,6 +88,10 @@
   &:focus {
     outline: none;
   }
+  &::placeholder {
+    color: white;
+    opacity: 0.5;
+  }
 }
 
 .list-group-horizontal {
@@ -101,6 +105,12 @@
   //We need to override the inline style injected by Bootstrap with JavaScript
   margin-top: -4.375rem !important;
   margin-left: -0.05rem !important;
+  max-height: 40rem;
+  overflow-y: auto;
+  overflow-x: hidden;
+  &::-webkit-scrollbar {
+    width: 0.1rem;
+  }
 }
 
 //Making the SVG icons thicker

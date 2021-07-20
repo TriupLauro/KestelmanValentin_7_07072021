@@ -10,13 +10,18 @@ function getIdsFromIndex(keyword, index) {
 }
 
 function getIdsIntersection(wordArray,index) {
-    let IdsIntersection = [...Array(51).keys()].slice(1);
+    let IdsSubArray;
     for (let word of wordArray) {
-        const IdsSubArray = getIdsFromIndex(word,index);
+        if (!IdsSubArray) {
+            IdsSubArray = getIdsFromIndex(word,index);
+        }else{
+            let nextArray = getIdsFromIndex(word,index);
+            if (!nextArray) return [];
+            IdsSubArray = IdsSubArray.filter(id => nextArray.includes(id));
+        }
         if (!IdsSubArray) return [];
-        IdsIntersection = IdsIntersection.filter(id => IdsSubArray.includes(id));
     }
-    return IdsIntersection;
+    return IdsSubArray;
 }
 
 function searchRecipeFromIndex(wordArray,index,recipes) {
@@ -77,7 +82,7 @@ searchAll('sau',recipes);
 searchAll('jfghj',recipes);
 */
 
-//Using nmgram nmgram
+//Using index nmgram
 /*
 searchRecipeFromIndex(['chocolat'],nmgram,recipes);
 searchRecipeFromIndex(['banane'],nmgram,recipes);
@@ -162,40 +167,34 @@ function displaySearchMessage(message, container = document.querySelector('#reci
 
 // The promise is just a way of waiting while blocking execution
 
-let inputTimer;
+//let inputTimer;
 
-async function readInputIndex(e) {
-    window.clearTimeout(inputTimer);
-    await new Promise((resolve) => {
-        resolve(inputTimer = setTimeout(inputResponse,500,e));
-    });
+function readInputIndex(e) {
+    //window.clearTimeout(inputTimer);
+    inputResponse(e);
 }
 
-async function inputResponse(e) {
+function inputResponse(e) {
     const characterLength = e.target.value.length;
     updateFilteredRecipes(false);
     if (characterLength >= 3 && characterLength <= 13) {
         const wordsArray = e.target.value.split(' ');
-        const resultsSet = await searchRecipeFromIndex(wordsArray,nmgram,filteredRecipes);
+        const resultsSet = searchRecipeFromIndex(wordsArray,nmgram,filteredRecipes);
         filteredRecipes = resultsSet;
-        await new Promise(r => setTimeout(r,500));
         updateDisplayedRecipes(resultsSet);
         if (resultsSet.length === 0) {
             displaySearchMessage('Aucune recette trouvée, essayez de chercher <<brownie>>, <<salade de riz>>...');
         }
     }else if (characterLength >= 14) {
-        const resultSet = await searchAll(e.target.value, filteredRecipes)
-        await new Promise(r => setTimeout(r,500));
+        const resultSet = searchAll(e.target.value, filteredRecipes)
         if (resultSet.size === 0) {
             displaySearchMessage('Aucune recette trouvée, essayez de chercher <<brownie>>, <<salade de riz>>...')
         }else{
             updateDisplayedRecipes(resultSet);
         }
     }else if (characterLength < 3 && characterLength >= 1) {
-        await new Promise(r => setTimeout(r,500));
         displaySearchMessage('Veuillez entrer au moins trois caractères')
     }else if (characterLength === 0) {
-        await new Promise(r => setTimeout(r,500));
         updateFilteredRecipes();
         updateDisplayedRecipes(filteredRecipes);
     }
@@ -228,7 +227,7 @@ function appendFilteredInventory(inventorySet,theme, inventoryElt) {
 }
 
 function addInventoryItem(inventoryItem,row,theme) {
-    const inventoryItemElt = document.createElement('ul');
+    const inventoryItemElt = document.createElement('li');
     inventoryItemElt.classList.add('list-group-item','dropdown-item',`bg-${theme}`, 'text-truncate', 'text-capitalize');
     inventoryItemElt.textContent = inventoryItem;
     inventoryItemElt.addEventListener('click', clickInventoryItem);
