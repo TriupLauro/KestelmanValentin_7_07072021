@@ -81,7 +81,7 @@ for (let item of object) {
 
 console.log('Index généré');
 
-const stringData = JSON.stringify(gramObject,null,4);
+const stringData = JSON.stringify(gramObject);
 
 fs.writeFile('index.js', stringData, (err) => {
     if (err) throw err;
