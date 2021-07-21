@@ -3,7 +3,7 @@ import {nmgram} from "./database/nmgram.js";
 // Do not reassign or modify the keywords array directly
 // Instead use the addKeyword, removeKeyword and removeMainKeyword functions
 // Then call the searchKeywords function to get the filtered recipes array
-let keywords = [];
+let keywords = [{keyword : '', type : 'main'}];
 
 function addKeyword(keyword, type) {
     keywords.push({
@@ -18,24 +18,24 @@ function removeKeyword(keyword, type) {
         console.warn('Keyword not found');
         return false;
     }
-    console.log(keywords.splice(targetIndex, 1));
-    console.log('Keyword removed');
+    keywords.splice(targetIndex, 1);
+    //console.log('Keyword removed');
 }
 
 function removeMainKeyword() {
     const targetIndex = keywords.findIndex(obj => obj.type === 'main');
-    console.log(targetIndex);
+
     if (targetIndex === -1) {
         console.warn('Main keyword not found');
         return false;
     }
-    console.log(keywords.splice(targetIndex, 1));
-    console.log('Main keyword removed');
+    keywords.splice(targetIndex, 1);
+    //console.log('Main keyword removed');
 }
 
-function logKeywords() {
+/*function logKeywords() {
         console.table(keywords);
-}
+}*/
 
 function searchKeywords(recipes,index) {
     if (keywords.length === 0) {
@@ -76,14 +76,16 @@ function getIdsFromIndex(keyword, index) {
 function getIdsIntersection(wordArray,index) {
     let IdsSubArray;
     for (let word of wordArray) {
-        if (!IdsSubArray) {
-            IdsSubArray = getIdsFromIndex(word,index);
-        }else{
-            let nextArray = getIdsFromIndex(word,index);
-            if (!nextArray) return [];
-            IdsSubArray = IdsSubArray.filter(id => nextArray.includes(id));
+        if (word.length >= 3) {
+            if (!IdsSubArray) {
+                IdsSubArray = getIdsFromIndex(word,index);
+            }else{
+                let nextArray = getIdsFromIndex(word,index);
+                if (!nextArray) return [];
+                IdsSubArray = IdsSubArray.filter(id => nextArray.includes(id));
+            }
+            if (!IdsSubArray) return [];
         }
-        if (!IdsSubArray) return [];
     }
     return IdsSubArray;
 }
@@ -94,7 +96,7 @@ function searchRecipeFromIndex(wordArray,index,recipes) {
 }
 
 // To include in benchmark (also include the database)
-// Full text search
+// Naive algorithm
 function searchRecipeNames(keyword, recipes) {
     return recipes.filter(recipe => recipe.name.toLocaleLowerCase().includes(keyword));
 }
@@ -137,7 +139,7 @@ function searchAllFromArray(keywords, recipes) {
     for (let word of keywords) {
         recipes = searchAll(word,recipes)
     }
-    return new Set (recipes);
+    return [...new Set (recipes)];
 }
 
 function getIngredientArray(recipe) {
@@ -236,7 +238,6 @@ function displaySearchMessage(message, container = document.querySelector('#reci
     container.appendChild(messageElt);
 }
 
-// The promise is just a way of waiting while blocking execution
 
 //let inputTimer;
 
@@ -248,27 +249,20 @@ function readInputIndex(e) {
 function inputResponse(e) {
     const characterLength = e.target.value.length;
     removeMainKeyword();
-    if (characterLength >= 3 && characterLength <= 13) {
-        const wordsArray = e.target.value.split(' ');
-        addKeyword(wordsArray);
-        const resultsSet = searchRecipeFromIndex(wordsArray,nmgram,recipes);
+    const keyword = e.target.value;
+    addKeyword(keyword,'main');
+    if (characterLength >= 3) {
+        const resultsSet = searchKeywords(recipes,nmgram);
         if (resultsSet.length === 0) {
             displaySearchMessage('Aucune recette trouvée, essayez de chercher <<brownie>>, <<salade de riz>>...');
         }else{
             updateDisplayedRecipes(resultsSet);
         }
-    }else if (characterLength >= 14) {
-        const resultSet = searchAll(e.target.value, recipes)
-        if (resultSet.size === 0) {
-            displaySearchMessage('Aucune recette trouvée, essayez de chercher <<brownie>>, <<salade de riz>>...')
-        }else{
-            updateDisplayedRecipes(resultSet);
-        }
     }else if (characterLength < 3 && characterLength >= 1) {
         displaySearchMessage('Veuillez entrer au moins trois caractères')
     }else if (characterLength === 0) {
-
-        updateDisplayedRecipes(recipes);
+        const filteredRecipes = searchKeywords(recipes,nmgram)
+        updateDisplayedRecipes(filteredRecipes);
     }
 }
 
@@ -301,7 +295,7 @@ function appendFilteredInventory(inventorySet,theme, inventoryElt) {
 
 function addInventoryItem(inventoryItem,row,theme) {
     const inventoryItemElt = document.createElement('li');
-    inventoryItemElt.classList.add('list-group-item','dropdown-item',`bg-${theme}`, 'text-truncate', 'text-capitalize');
+    inventoryItemElt.classList.add('list-group-item','dropdown-item',`bg-${theme}`, 'text-truncate');
     inventoryItemElt.textContent = inventoryItem;
     inventoryItemElt.addEventListener('click', clickInventoryItem);
     row.appendChild(inventoryItemElt);
@@ -416,13 +410,6 @@ window.addEventListener('load',() => {
     const recipeTemplate = document.querySelector('#js-recipe-card')
     updateDisplayedRecipes(recipes,recipeContainer,recipeTemplate);
     mainSearch.addEventListener('input',readInputIndex);
-
-    //addKeyword('blender','appliance');
-    //addKeyword('couteau','ustensil');
-    //removeKeyword('blender','appliance');
-    //addKeyword('sucre','ingredient');
-    //logKeywords();
-    //console.log(searchKeywords(recipes,nmgram));
 
     //Event listeners for the advanced filters
     dropDownToggle.forEach(btn => {
