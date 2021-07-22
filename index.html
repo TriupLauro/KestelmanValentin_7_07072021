@@ -26,13 +26,20 @@
     </div>
 
     <div class="row">
-        <div class="col">
-            <div class="alert alert-primary alert-dismissible fade show d-inline-block fw-bold">
+        <div class="col js-tag-container">
+            <!--<div class="alert alert-primary alert-dismissible fade show d-inline-block fw-bold">
                 Coco
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="close"></button>
-            </div>
+            </div>-->
         </div>
     </div>
+
+    <template id="js-tag">
+        <div class="alert alert-dismissible fade show d-inline-block fw-bold js-keyword-tag">
+            <span class="tag-text"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="close"></button>
+        </div>
+    </template>
 
     <div class="row mb-4">
         <div class="col-auto">
@@ -41,7 +48,7 @@
                         data-bs-toggle="dropdown" aria-expanded="false" data-theme="primary" data-inventory="ingredient">
                     Ingrédients
                 </button>
-                <ul class="dropdown-menu bg-primary rounded">
+                <div class="dropdown-menu bg-primary rounded">
                     <input type="text" class="bg-primary w-100 dropdown-input" placeholder="Rechercher un ingrédient">
                     <div class="inventory">
                         <ul class="list-group list-group-horizontal">
@@ -55,7 +62,7 @@
                             <li class="list-group-item dropdown-item bg-primary">Crème de coco</li>
                         </ul>
                     </div>
-                </ul>
+                </div>
             </div>
         </div>
 
@@ -65,7 +72,7 @@
                         data-bs-toggle="dropdown" aria-expanded="false" data-theme="success" data-inventory="appliance">
                     Appareils
                 </button>
-                <ul class="dropdown-menu bg-success rounded">
+                <div class="dropdown-menu bg-success rounded">
                     <input type="text" class="bg-success w-100 dropdown-input" placeholder="Rechercher un appareil">
                     <div class="inventory">
                         <ul class="list-group list-group-horizontal">
@@ -74,7 +81,7 @@
                             <li class="list-group-item dropdown-item bg-success">Cocotte</li>
                         </ul>
                     </div>
-                </ul>
+                </div>
             </div>
         </div>
 
@@ -84,7 +91,7 @@
                         data-bs-toggle="dropdown" aria-expanded="false" data-theme="danger" data-inventory="ustensil">
                     Ustensiles
                 </button>
-                <ul class="dropdown-menu bg-danger rounded">
+                <div class="dropdown-menu bg-danger rounded">
                     <input type="text" class="bg-danger w-100 dropdown-input" placeholder="Rechercher un ustensile">
                     <div class="inventory">
                         <ul class="list-group list-group-horizontal">
@@ -96,7 +103,7 @@
                             <li class="list-group-item dropdown-item bg-danger">cuillière à soupe</li>
                         </ul>
                     </div>
-                </ul>
+                </div>
             </div>
         </div>
     </div>
