@@ -42,6 +42,7 @@ function searchKeywords(recipes,index) {
         console.warn('No keywords registered');
     }
     for (let wordObj of keywords) {
+        // Search from the main search bar
         if (wordObj.type === 'main') {
             const stringLength = wordObj.keyword.length;
             const wordArray = wordObj.keyword.split(' ');
@@ -52,6 +53,8 @@ function searchKeywords(recipes,index) {
                 recipes = searchAllFromArray(wordArray,recipes);
             }
         }
+
+        // Search from the filters tags
         if (wordObj.type === 'ingredient') {
             recipes = searchIngredients(wordObj.keyword,recipes);
         }
@@ -68,7 +71,7 @@ function searchKeywords(recipes,index) {
 // Find the keyword in the recipe database
 
 // To include in benchmark (also include the database and nmgram)
-// Search using the nmgram
+// Search using the nmgram index
 function getIdsFromIndex(keyword, index) {
     return index[keyword.toLocaleLowerCase()];
 }
@@ -307,44 +310,6 @@ function addInventoryRow(inventoryElt) {
     inventoryElt.appendChild(listRow);
     return listRow;
 }
-
-/*function updateFilteredRecipes(resetMainInput = true) {
-    const alertTags = document.querySelectorAll('.js-keyword-tag');
-    const ingredientsTags = [];
-    const ustensilTags = [];
-    const applianceTags = [];
-    const mainSearchInput = document.querySelector('#main-search');
-    alertTags.forEach(tagElt => {
-        if (tagElt.dataset.inventory === 'ingredient') {
-            ingredientsTags.push(tagElt.querySelector('.tag-text').textContent);
-        }
-        if (tagElt.dataset.inventory === 'ustensil') {
-            ustensilTags.push(tagElt.querySelector('.tag-text').textContent);
-        }
-        if (tagElt.dataset.inventory === 'appliance') {
-            applianceTags.push(tagElt.querySelector('.tag-text').textContent);
-        }
-    });
-    filteredRecipes = recipes;
-
-    ingredientsTags.forEach(keyword => {
-        filteredRecipes = searchIngredients(keyword, filteredRecipes);
-    });
-    ustensilTags.forEach(keyword => {
-        filteredRecipes = searchUstensils(keyword, filteredRecipes);
-    });
-    applianceTags.forEach(keyword => {
-        filteredRecipes = searchAppliance(keyword, filteredRecipes);
-    });
-    if (resetMainInput) {
-        mainSearchInput.value = '';
-        updateDisplayedRecipes(filteredRecipes);
-    }
-}
-
-function updateFiltersAfterClose() {
-    setTimeout(updateFilteredRecipes,500);
-}*/
 
 function removeAlertTag(e) {
     const item = e.target.previousSibling.previousSibling.textContent;
