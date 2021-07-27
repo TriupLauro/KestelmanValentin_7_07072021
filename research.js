@@ -138,7 +138,7 @@ function getIdsIntersection(wordArray,index) {
  * their id returned by getsIdsIntersection.
  * @param {array} wordArray - The array containing all the keywords to be checked
  * @param {object} index - The index in which to check the keywords
- * @param {array} recipes - The recipes database (an array where each recipe is an object containing the recipes details)
+ * @param {array} recipes - The recipes database (full or filtered)
  */
 function searchRecipeFromIndex(wordArray,index,recipes) {
     const IdsArray = getIdsIntersection(wordArray,index);
@@ -151,7 +151,7 @@ function searchRecipeFromIndex(wordArray,index,recipes) {
  * Use the native JS array methods to search the recipes database by the recipe name
  * Returns an array by filtering the specified database.
  * @param {string} keyword - The keyword to search in the recipes names
- * @param {array} recipes - The recipes database (an array where each recipe is an object containing the recipes details)
+ * @param {array} recipes - The recipes database (full or filtered)
  */
 function searchRecipeNames(keyword, recipes) {
     return recipes.filter(recipe => recipe.name.toLocaleLowerCase().includes(keyword));
@@ -161,7 +161,7 @@ function searchRecipeNames(keyword, recipes) {
  * Use the native JS array methods to search the recipes database by the appliance used in the recipes.
  * Returns an array by filtering the specified database.
  * @param {string} keyword - The keyword to search in the recipes appliances
- * @param {array} recipes - The recipes database (an array where each recipe is an object containing the recipes details)
+ * @param {array} recipes - The recipes database (full or filtered)
  */
 function searchAppliance(keyword, recipes) {
     return recipes.filter(recipe => recipe.appliance.toLocaleLowerCase().includes(keyword));
@@ -171,7 +171,7 @@ function searchAppliance(keyword, recipes) {
  * Use the native JS array methods to search the recipes database in the recipe description.
  * Returns an array by filtering the specified database.
  * @param {string} keyword - The keyword to search in the recipes descriptions
- * @param {array} recipes - The recipes database (an array where each recipe is an object containing the recipes details)
+ * @param {array} recipes - The recipes database (full or filtered)
  */
 function searchDescription(keyword, recipes) {
     return recipes.filter(recipe => recipe.description.toLocaleLowerCase().includes(keyword));
@@ -181,7 +181,7 @@ function searchDescription(keyword, recipes) {
  * Use the native JS array methods to search the recipes database in the recipes ustensils.
  * Returns an array by filtering the specified database.
  * @param {string} keyword - The keyword to search in the recipes ustensils
- * @param {array} recipes - The recipes database (an array where each recipe is an object containing the recipes details)
+ * @param {array} recipes - The recipes database (full or filtered)
  */
 function searchUstensils(keyword, recipes) {
     return recipes.filter(recipe => {
@@ -195,7 +195,7 @@ function searchUstensils(keyword, recipes) {
  * Use the native JS array methods to search the recipes database in the recipes ingredients.
  * Returns an array by filtering the specified database.
  * @param {string} keyword - The keyword to search in the recipes ingredients
- * @param {array} recipes - The recipes database (an array where each recipe is an object containing the recipes details)
+ * @param {array} recipes - The recipes database (full or filtered)
  */
 function searchIngredients(keyword, recipes) {
     return recipes.filter(recipe => {
@@ -208,7 +208,7 @@ function searchIngredients(keyword, recipes) {
  * Combine all the previous search functions and returns an array of filtered recipes.
  * There may be duplicates if more than one of the called functions filter the same recipe.
  * @param {string} keyword - The keyword to search in the recipes database
- * @param {array} recipes - The recipes database (an array where each recipe is an object containing the recipes details)
+ * @param {array} recipes - The recipes database (full or fitlered)
  */
 function searchAll(keyword, recipes) {
     keyword = keyword.toLocaleLowerCase();
@@ -223,10 +223,10 @@ function searchAll(keyword, recipes) {
 
 /**
  * Iterate through an array of keywords filtering the recipes to the recipes containing all the keywords.
- * Since the function called may give duplicates, before the array is returned it is made into a set
- * and then back into an array. The array returned can be used by the recipes displaying functions.
+ * To avoid duplicates, before the array is returned, it is made into a set and then back into an array.
+ * The array returned can be used by the recipes displaying functions.
  * @param {array} keywords - The array containing the keywords to search in the recipes database
- * @param {array} recipes - The recipes database (an array where each recipe is an object containing the recipes details)
+ * @param {array} recipes - The recipes database (full or filtered)
  */
 function searchAllFromArray(keywords, recipes) {
     for (let word of keywords) {
