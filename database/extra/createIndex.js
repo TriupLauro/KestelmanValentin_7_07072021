@@ -12,8 +12,8 @@ function processWord(word) {
     res = res.normalize('NFD').replace(/\p{Diacritic}/gu, '');
     //Removes beginning and ending punctuation
     if (res.endsWith(',')) res = res.slice(0, -1);
-    if (res.endsWith('...')) res = res.slice(0, -1);
-    if (res.endsWith('..')) res = res.slice(0, -1);
+    if (res.endsWith('...')) res = res.slice(0, -3);
+    if (res.endsWith('..')) res = res.slice(0, -2);
     if (res.endsWith('.')) res = res.slice(0, -1);
     if (res.startsWith('(')) res = res.slice(1);
     if (res.endsWith(')')) res = res.slice(0, -1);

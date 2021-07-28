@@ -1,5 +1,7 @@
 import {recipes} from "./database/recipes.js";
 import {nmgram} from "./database/nmgram.js";
+import {recipesObject} from "./database/recipesObject.js";
+
 // Do not reassign or modify the keywords array directly
 // Instead use the addKeyword, removeKeyword and removeMainKeyword functions
 // Then call the searchKeywords function to get the filtered recipes array
@@ -60,24 +62,25 @@ function removeMainKeyword() {
  * NB : the keyword array being external, this function doesn't take keywords arguments.
  * @param {array} recipes - The database containing all the recipes in an array of object
  * @param {object} index - The nmgram index used for the search by index
+ * @param {object} objectDb - The recipes database as an object with recipes ids as keys
  */
-function searchKeywords(recipes,index) {
+function searchKeywords(recipes,index, objectDb) {
     if (keywords.length === 0) {
         console.warn('No keywords registered');
     }
-    for (let wordObj of keywords) {
-        // Search from the main search bar
-        if (wordObj.type === 'main') {
-            const stringLength = wordObj.keyword.length;
-            const wordArray = wordObj.keyword.split(' ');
-            if (stringLength >= 3 && stringLength < 14) {
-                recipes = searchRecipeFromIndex(wordArray,index,recipes);
-            }
-            if (stringLength >= 14) {
-                recipes = searchAllFromArray(wordArray,recipes);
-            }
-        }
 
+    // Search from the main search bar
+    const mainKeyword = keywords.find(wordObj => wordObj.type === 'main');
+    const stringLength = mainKeyword.keyword.length;
+    const wordArray = mainKeyword.keyword.split(' ');
+    if (stringLength >= 3 && stringLength < 14) {
+        recipes = searchRecipeFromIndex(wordArray,index,objectDb);
+    }
+    if (stringLength >= 14) {
+        recipes = searchAllFromArray(wordArray,recipes);
+    }
+
+    for (let wordObj of keywords) {
         // Search from the filters tags
         if (wordObj.type === 'ingredient') {
             recipes = searchIngredients(wordObj.keyword,recipes);
@@ -138,11 +141,15 @@ function getIdsIntersection(wordArray,index) {
  * their id returned by getsIdsIntersection.
  * @param {array} wordArray - The array containing all the keywords to be checked
  * @param {object} index - The index in which to check the keywords
- * @param {array} recipes - The recipes database (full or filtered)
+ * @param {object} objectDb - The recipes database as an index with recipes Ids as keys
  */
-function searchRecipeFromIndex(wordArray,index,recipes) {
+function searchRecipeFromIndex(wordArray,index,objectDb) {
+    const resultArray = [];
     const IdsArray = getIdsIntersection(wordArray,index);
-    return recipes.filter(recipe => IdsArray.includes(recipe.id));
+    for (let id of IdsArray) {
+        resultArray.push(objectDb[id]);
+    }
+    return resultArray;
 }
 
 // To include in benchmark (also include the database)
@@ -254,10 +261,10 @@ searchAllFromArray(['jfghj'],recipes);
 
 //Using index nmgram
 /*
-searchRecipeFromIndex(['chocolat'],nmgram,recipes);
-searchRecipeFromIndex(['banane'],nmgram,recipes);
-searchRecipeFromIndex(['sau'],nmgram,recipes);
-searchRecipeFromIndex(['jfghj'],nmgram,recipes);
+searchRecipeFromIndex(['chocolat'],nmgram,recipesObject);
+searchRecipeFromIndex(['banane'],nmgram,recipesObject);
+searchRecipeFromIndex(['sau'],nmgram,recipesObject);
+searchRecipeFromIndex(['jfghj'],nmgram,recipesObject);
 */
 
 //End of code to benchmark
@@ -402,7 +409,7 @@ function inputResponse(e) {
     const keyword = e.target.value;
     addKeyword(keyword,'main');
     if (characterLength >= 3) {
-        const resultsSet = searchKeywords(recipes,nmgram);
+        const resultsSet = searchKeywords(recipes,nmgram,recipesObject);
         if (resultsSet.length === 0) {
             displaySearchMessage('Aucune recette trouvée, essayez de chercher <<brownie>>, <<salade de riz>>...');
         }else{
@@ -411,7 +418,7 @@ function inputResponse(e) {
     }else if (characterLength < 3 && characterLength >= 1) {
         displaySearchMessage('Veuillez entrer au moins trois caractères')
     }else if (characterLength === 0) {
-        const filteredRecipes = searchKeywords(recipes,nmgram)
+        const filteredRecipes = searchKeywords(recipes,nmgram,recipesObject);
         updateDisplayedRecipes(filteredRecipes);
     }
 }
@@ -430,7 +437,7 @@ function clickDropdown(e) {
     const inventoryType = e.target.dataset.inventory;
     const dropDownInput = dropDownMenu.querySelector('input');
     dropDownInput.value = '';
-    const filteredRecipes = searchKeywords(recipes,nmgram)
+    const filteredRecipes = searchKeywords(recipes,nmgram,recipesObject)
     const inventorySet = inventorySpecified(inventoryType,filteredRecipes);
     updateInventoryDisplay(inventoryElt,inventorySet,theme);
 }
@@ -497,7 +504,7 @@ function removeAlertTag(e) {
     const inventoryType = e.target.parentElement.dataset.inventory;
 
     removeKeyword(item,inventoryType);
-    const filteredRecipes = searchKeywords(recipes,nmgram);
+    const filteredRecipes = searchKeywords(recipes,nmgram,recipesObject);
     updateDisplayedRecipes(filteredRecipes);
 }
 
@@ -536,7 +543,7 @@ function clickInventoryItem(e) {
     const alertContainer = document.querySelector('.js-tag-container');
     addKeyword(item,inventoryType);
     addAlertTag(item,theme,inventoryType,alertContainer);
-    const filteredRecipes = searchKeywords(recipes,nmgram);
+    const filteredRecipes = searchKeywords(recipes,nmgram,recipesObject);
     updateDisplayedRecipes(filteredRecipes);
 }
 
@@ -550,7 +557,7 @@ function typeInventorySearch(e) {
     const parentBtn = e.target.parentElement.previousSibling.previousSibling;
     const theme = parentBtn.dataset.theme;
     const inventoryType = parentBtn.dataset.inventory;
-    const filteredRecipes = searchKeywords(recipes,nmgram);
+    const filteredRecipes = searchKeywords(recipes,nmgram,recipesObject);
     const filteredInventory = [...inventorySpecified(inventoryType, filteredRecipes)]
         .filter(item => item.includes(keyword.toLocaleLowerCase()));
     updateInventoryDisplay(inventoryElt,filteredInventory,theme);
