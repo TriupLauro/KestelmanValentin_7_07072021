@@ -37,16 +37,22 @@ function searchKeywords(recipes) {
     if (keywords.length === 0) {
         console.warn('No keywords registered');
     }
-    for (let wordObj of keywords) {
-        // Research keywords from the main search bar
-        if (wordObj.type === 'main') {
-            const stringLength = wordObj.keyword.length;
-            const wordArray = wordObj.keyword.split(' ');
-            if (stringLength >= 3) {
-                recipes = searchAllFromArray(wordArray,recipes);
-            }
-        }
 
+    // Research keywords from the main search bar
+    const mainKeyword = keywords.find(keywordObj => keywordObj.type === 'main');
+    const stringLength = mainKeyword.keyword.length;
+    const wordArray = mainKeyword.keyword.split(' ');
+    if (localStorage.getItem(mainKeyword.keyword)) {
+        recipes = JSON.parse(localStorage.getItem(mainKeyword.keyword));
+    }else {
+        if (stringLength >= 3) {
+            recipes = searchAllFromArray(wordArray, recipes);
+        }
+        const stringifiedResult = JSON.stringify(recipes);
+        localStorage.setItem(mainKeyword.keyword,stringifiedResult);
+    }
+
+    for (let wordObj of keywords) {
         //Research filter keywords
         if (wordObj.type === 'ingredient') {
             recipes = searchIngredients(wordObj.keyword,recipes);
