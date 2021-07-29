@@ -73,11 +73,20 @@ function searchKeywords(recipes,index, objectDb) {
     const mainKeyword = keywords.find(wordObj => wordObj.type === 'main');
     const stringLength = mainKeyword.keyword.length;
     const wordArray = mainKeyword.keyword.split(' ');
-    if (stringLength >= 3 && stringLength < 14) {
-        recipes = searchRecipeFromIndex(wordArray,index,objectDb);
-    }
-    if (stringLength >= 14) {
-        recipes = searchAllFromArray(wordArray,recipes);
+
+    // Check for past results in local storage
+    if (localStorage.getItem(mainKeyword.keyword)) {
+        recipes = JSON.parse(localStorage.getItem(mainKeyword.keyword))
+    }else{
+        if (stringLength >= 3 && stringLength < 14) {
+            recipes = searchRecipeFromIndex(wordArray,index,objectDb);
+        }
+        if (stringLength >= 14) {
+            recipes = searchAllFromArray(wordArray,recipes);
+        }
+        // Memoizing in the client's local storage
+        const mainSearchStringified = JSON.stringify(recipes);
+        localStorage.setItem(mainKeyword.keyword,mainSearchStringified);
     }
 
     for (let wordObj of keywords) {
