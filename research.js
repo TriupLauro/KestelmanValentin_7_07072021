@@ -109,7 +109,7 @@ function searchAll(keyword, recipes) {
 
 function searchAllFromArray(keywords, recipes) {
     for (let word of keywords) {
-        recipes = searchAll(word,recipes)
+        recipes = searchAll(word,recipes);
     }
     return [...new Set (recipes)];
 }
