@@ -246,7 +246,7 @@ function searchAll(keyword, recipes) {
  */
 function searchAllFromArray(keywords, recipes) {
     for (let word of keywords) {
-        recipes = searchAll(word,recipes)
+        recipes = searchAll(word,recipes);
     }
     return [...new Set (recipes)];
 }
@@ -260,7 +260,7 @@ function getIngredientArray(recipe) {
 }
 
 //To run in the benchmark
-//Full text
+//Naive algorithm
 /*
 searchAllFromArray(['chocolat'],recipes);
 searchAllFromArray(['banane'],recipes);
