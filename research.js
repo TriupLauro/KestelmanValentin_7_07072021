@@ -157,7 +157,7 @@ function includeRecipeTemplate(recipe, container,recipeTemplate) {
         ingredientNameElt.textContent = ingredient.ingredient;
         item.appendChild(ingredientNameElt);
         if ('quantity' in ingredient) {
-            item.append(': ')
+            ingredientNameElt.append(': ')
             item.append(ingredient.quantity);
             if ('unit' in ingredient) {
                 item.append(` ${ingredient.unit}`);
