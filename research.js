@@ -137,8 +137,8 @@ function getIdsIntersection(wordArray,index) {
                 if (!nextArray) return [];
                 IdsSubArray = IdsSubArray.filter(id => nextArray.includes(id));
             }
-            if (!IdsSubArray) return [];
         }
+        if (!IdsSubArray) return [];
     }
     return IdsSubArray;
 }
@@ -446,7 +446,7 @@ function clickDropdown(e) {
     const inventoryType = e.target.dataset.inventory;
     const dropDownInput = dropDownMenu.querySelector('input');
     dropDownInput.value = '';
-    const filteredRecipes = searchKeywords(recipes,nmgram,recipesObject)
+    const filteredRecipes = searchKeywords(recipes,nmgram,recipesObject);
     const inventorySet = inventorySpecified(inventoryType,filteredRecipes);
     updateInventoryDisplay(inventoryElt,inventorySet,theme);
 }
