@@ -11736,11 +11736,13 @@ h1, .h1 {
 .dropdown-menu {
   margin-top: -4.375rem !important;
   margin-left: -0.05rem !important;
-  max-height: 40rem;
+}
+.dropdown-menu .inventory {
+  max-height: 30rem;
   overflow-y: auto;
   overflow-x: hidden;
 }
-.dropdown-menu::-webkit-scrollbar {
+.dropdown-menu .inventory::-webkit-scrollbar {
   width: 0.1rem;
 }
 
