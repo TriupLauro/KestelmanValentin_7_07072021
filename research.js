@@ -70,34 +70,34 @@ function searchKeywords(recipes) {
 // Find the keyword in the recipe database
 // Naive algorithm
 function searchRecipeNames(keyword, recipes) {
-    return recipes.filter(recipe => recipe.name.toLocaleLowerCase().includes(keyword));
+    return recipes.filter(recipe => recipe.name.toLocaleLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '').includes(keyword));
 }
 
 function searchAppliance(keyword, recipes) {
-    return recipes.filter(recipe => recipe.appliance.toLocaleLowerCase().includes(keyword));
+    return recipes.filter(recipe => recipe.appliance.toLocaleLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '').includes(keyword));
 }
 
 function searchDescription(keyword, recipes) {
-    return recipes.filter(recipe => recipe.description.toLocaleLowerCase().includes(keyword));
+    return recipes.filter(recipe => recipe.description.toLocaleLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '').includes(keyword));
 }
 
 function searchUstensils(keyword, recipes) {
     return recipes.filter(recipe => {
         return recipe.ustensils
-            .map(ustensil => ustensil.toLocaleLowerCase())
+            .map(ustensil => ustensil.toLocaleLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, ''))
             .some(ustensil => ustensil.includes(keyword));
     });
 }
 
 function searchIngredients(keyword, recipes) {
     return recipes.filter(recipe => {
-        return getIngredientArray(recipe)
+        return getIngredientArray(recipe, true)
             .some(ingredient => ingredient.includes(keyword));
     });
 }
 
 function searchAll(keyword, recipes) {
-    keyword = keyword.toLocaleLowerCase();
+    keyword = keyword.toLocaleLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '');
     return [
         searchRecipeNames(keyword,recipes),
         searchUstensils(keyword,recipes),
@@ -114,22 +114,37 @@ function searchAllFromArray(keywords, recipes) {
     return [...new Set (recipes)];
 }
 
-function getIngredientArray(recipe) {
-    return recipe.ingredients.map(item => item.ingredient.toLocaleLowerCase());
+function getIngredientArray(recipe, normalizeAccents) {
+    if (normalizeAccents) {
+        return recipe.ingredients.map(item => item.ingredient.toLocaleLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, ''));
+    }else{
+        return recipe.ingredients.map(item => item.ingredient.toLocaleLowerCase());
+    }
 }
 
-function ingredientsInventory(recipes) {
-    return new Set (recipes.map(recipe => getIngredientArray(recipe)).flat(1));
+function ingredientsInventory(recipes, normalizeAccents) {
+    return new Set (recipes.map(recipe => getIngredientArray(recipe, normalizeAccents)).flat(1));
 }
 
-function applianceInventory(recipes) {
-    return new Set (recipes.map(recipe => recipe.appliance.toLocaleLowerCase()));
+function applianceInventory(recipes, normalizeAccents) {
+    if (normalizeAccents) {
+        return new Set (recipes.map(recipe => recipe.appliance.toLocaleLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '')));
+    }else{
+        return new Set (recipes.map(recipe => recipe.appliance.toLocaleLowerCase()));
+    }
 }
 
-function ustensilsInventory(recipes) {
-    return new Set (recipes.map(recipe => recipe.ustensils
-        .map(u => u.toLocaleLowerCase()))
-        .flat(1));
+function ustensilsInventory(recipes, normalizeAccents) {
+    if (normalizeAccents) {
+        return new Set (recipes.map(recipe => recipe.ustensils
+            .map(u => u.toLocaleLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '')))
+            .flat(1));
+    }else{
+        return new Set (recipes.map(recipe => recipe.ustensils
+            .map(u => u.toLocaleLowerCase().normalize('NFD')))
+            .flat(1));
+    }
+
 }
 
 function clearContainer(container) {
@@ -223,7 +238,7 @@ function clickDropdown(e) {
     const inventoryType = e.target.dataset.inventory;
     const dropDownInput = dropDownMenu.querySelector('input');
     dropDownInput.value = '';
-    const filteredRecipes = searchKeywords(recipes)
+    const filteredRecipes = searchKeywords(recipes);
     const inventorySet = inventorySpecified(inventoryType,filteredRecipes);
     updateInventoryDisplay(inventoryElt,inventorySet,theme);
 }
@@ -249,7 +264,7 @@ function clickInventoryItem(e) {
     const theme = parentBtn.dataset.theme;
     const inventoryType = parentBtn.dataset.inventory;
     const alertContainer = document.querySelector('.js-tag-container');
-    addKeyword(item,inventoryType);
+    addKeyword(item.normalize('NFD').replace(/\p{Diacritic}/gu, ''),inventoryType);
     addAlertTag(item,theme,inventoryType,alertContainer);
     const filteredRecipes = searchKeywords(recipes);
     updateDisplayedRecipes(filteredRecipes);
@@ -269,7 +284,7 @@ function addAlertTag(item,theme,inventoryType,alertContainer,
 }
 
 function removeAlertTag(e) {
-    const item = e.target.previousSibling.previousSibling.textContent;
+    const item = e.target.previousSibling.previousSibling.textContent.normalize('NFD').replace(/\p{Diacritic}/gu, '');
     const inventoryType = e.target.parentElement.dataset.inventory;
 
     removeKeyword(item,inventoryType);
@@ -293,25 +308,32 @@ function addInventoryRow(inventoryElt) {
 }
 
 function typeInventorySearch(e) {
-    const keyword = e.target.value;
+    const keyword = e.target.value.toLocaleLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '');
     const inventoryElt = e.target.nextSibling.nextSibling;
     const parentBtn = e.target.parentElement.previousSibling.previousSibling;
     const theme = parentBtn.dataset.theme;
     const inventoryType = parentBtn.dataset.inventory;
     const filteredRecipes = searchKeywords(recipes);
-    const filteredInventory = [...inventorySpecified(inventoryType, filteredRecipes)]
-        .filter(item => item.includes(keyword.toLocaleLowerCase()));
+    const processedInventory = [...inventorySpecified(inventoryType, filteredRecipes)].map(item => {
+       return {
+           itemRaw : item,
+           itemProcessed : item.toLocaleLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '')
+       }
+    })
+    const filteredInventoryProcessed = processedInventory
+        .filter(item => item.itemProcessed.includes(keyword.toLocaleLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '')));
+    const filteredInventory = filteredInventoryProcessed.map(item => item.itemRaw)
     updateInventoryDisplay(inventoryElt,filteredInventory,theme);
 }
 
-function inventorySpecified(inventoryType, recipes) {
+function inventorySpecified(inventoryType, recipes, normalizeAccents) {
     switch (inventoryType) {
         case 'ingredient' :
-            return ingredientsInventory(recipes);
+            return ingredientsInventory(recipes, normalizeAccents);
         case 'appliance' :
-            return applianceInventory(recipes);
+            return applianceInventory(recipes, normalizeAccents);
         case 'ustensil' :
-            return ustensilsInventory(recipes);
+            return ustensilsInventory(recipes, normalizeAccents);
     }
 }
 
