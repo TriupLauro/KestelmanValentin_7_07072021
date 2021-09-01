@@ -260,7 +260,7 @@ function getIngredientArray(recipe, normalizeAccents) {
     if (normalizeAccents) {
         return recipe.ingredients.map(item => item.ingredient.toLocaleLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, ''));
     }else{
-        return recipe.ingredients.map(item => item.ingredient.toLocaleLowerCase());
+        return recipe.ingredients.map(item => item.ingredient);
     }
 }
 
@@ -303,7 +303,7 @@ function applianceInventory(recipes, normalizeAccents) {
     if (normalizeAccents) {
         return new Set (recipes.map(recipe => recipe.appliance.toLocaleLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '')));
     }else{
-        return new Set (recipes.map(recipe => recipe.appliance.toLocaleLowerCase()));
+        return new Set (recipes.map(recipe => recipe.appliance));
     }
 }
 
@@ -319,8 +319,7 @@ function ustensilsInventory(recipes, normalizeAccents) {
             .map(u => u.toLocaleLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '')))
             .flat(1));
     }else{
-        return new Set (recipes.map(recipe => recipe.ustensils
-            .map(u => u.toLocaleLowerCase().normalize('NFD')))
+        return new Set (recipes.map(recipe => recipe.ustensils)
             .flat(1));
     }
 }
@@ -527,7 +526,7 @@ function addInventoryRow(inventoryElt) {
  * Removes the corresponding keyword from the keyword array and update the search results accordingly.
  */
 function removeAlertTag(e) {
-    const item = e.target.previousSibling.previousSibling.textContent.normalize('NFD').replace(/\p{Diacritic}/gu, '');
+    const item = e.target.previousSibling.previousSibling.textContent.toLocaleLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '');
     const inventoryType = e.target.parentElement.dataset.inventory;
 
     removeKeyword(item,inventoryType);
@@ -568,7 +567,7 @@ function clickInventoryItem(e) {
     const theme = parentBtn.dataset.theme;
     const inventoryType = parentBtn.dataset.inventory;
     const alertContainer = document.querySelector('.js-tag-container');
-    addKeyword(item.normalize('NFD').replace(/\p{Diacritic}/gu, ''),inventoryType);
+    addKeyword(item.toLocaleLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, ''),inventoryType);
     addAlertTag(item,theme,inventoryType,alertContainer);
     const filteredRecipes = searchKeywords(recipes,nmgram,recipesObject);
     updateDisplayedRecipes(filteredRecipes);
