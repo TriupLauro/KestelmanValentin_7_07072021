@@ -116,7 +116,7 @@ function searchKeywords(recipes,index, objectDb) {
  * @param {object} index - The index in which to check the keyword
  */
 function getIdsFromIndex(keyword, index) {
-    return index[keyword.toLocaleLowerCase()];
+    return index[keyword.toLocaleLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '')];
 }
 
 /**
@@ -170,7 +170,7 @@ function searchRecipeFromIndex(wordArray,index,objectDb) {
  * @param {array} recipes - The recipes database (full or filtered)
  */
 function searchRecipeNames(keyword, recipes) {
-    return recipes.filter(recipe => recipe.name.toLocaleLowerCase().includes(keyword));
+    return recipes.filter(recipe => recipe.name.toLocaleLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '').includes(keyword));
 }
 
 /**
@@ -180,7 +180,7 @@ function searchRecipeNames(keyword, recipes) {
  * @param {array} recipes - The recipes database (full or filtered)
  */
 function searchAppliance(keyword, recipes) {
-    return recipes.filter(recipe => recipe.appliance.toLocaleLowerCase().includes(keyword));
+    return recipes.filter(recipe => recipe.appliance.toLocaleLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '').includes(keyword));
 }
 
 /**
@@ -190,7 +190,7 @@ function searchAppliance(keyword, recipes) {
  * @param {array} recipes - The recipes database (full or filtered)
  */
 function searchDescription(keyword, recipes) {
-    return recipes.filter(recipe => recipe.description.toLocaleLowerCase().includes(keyword));
+    return recipes.filter(recipe => recipe.description.toLocaleLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '').includes(keyword));
 }
 
 /**
@@ -202,7 +202,7 @@ function searchDescription(keyword, recipes) {
 function searchUstensils(keyword, recipes) {
     return recipes.filter(recipe => {
         return recipe.ustensils
-            .map(ustensil => ustensil.toLocaleLowerCase())
+            .map(ustensil => ustensil.toLocaleLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, ''))
             .some(ustensil => ustensil.includes(keyword));
     });
 }
@@ -227,7 +227,7 @@ function searchIngredients(keyword, recipes) {
  * @param {array} recipes - The recipes database (full or fitlered)
  */
 function searchAll(keyword, recipes) {
-    keyword = keyword.toLocaleLowerCase();
+    keyword = keyword.toLocaleLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '');
     return [
         searchRecipeNames(keyword,recipes),
         searchUstensils(keyword,recipes),
@@ -256,7 +256,7 @@ function searchAllFromArray(keywords, recipes) {
  * @param {object} recipe - The recipe object whose ingredients we want to get
  */
 function getIngredientArray(recipe) {
-    return recipe.ingredients.map(item => item.ingredient.toLocaleLowerCase());
+    return recipe.ingredients.map(item => item.ingredient.toLocaleLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, ''));
 }
 
 //To run in the benchmark
