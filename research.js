@@ -215,7 +215,7 @@ function searchUstensils(keyword, recipes) {
  */
 function searchIngredients(keyword, recipes) {
     return recipes.filter(recipe => {
-        return getIngredientArray(recipe)
+        return getIngredientArray(recipe, true)
             .some(ingredient => ingredient.includes(keyword));
     });
 }
@@ -254,9 +254,14 @@ function searchAllFromArray(keywords, recipes) {
 /**
  * Returns all the ingredients of the specified recipe in the form of an array of ingredients.
  * @param {object} recipe - The recipe object whose ingredients we want to get
+ * @param {boolean} normalizeAccents - Option to remove diacritic signs
  */
-function getIngredientArray(recipe) {
-    return recipe.ingredients.map(item => item.ingredient.toLocaleLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, ''));
+function getIngredientArray(recipe, normalizeAccents) {
+    if (normalizeAccents) {
+        return recipe.ingredients.map(item => item.ingredient.toLocaleLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, ''));
+    }else{
+        return recipe.ingredients.map(item => item.ingredient.toLocaleLowerCase());
+    }
 }
 
 //To run in the benchmark
@@ -282,29 +287,42 @@ searchRecipeFromIndex(['jfghj'],nmgram,recipesObject);
  * Returns the ingredients of the recipes included in the specified array.
  * Useful for the advanced filters.
  * @param {array} recipes - The filtered recipes from which we want to get the ingredients
+ * @param {boolean} normalizeAccents - Option to remove diacritic signs
  */
-function ingredientsInventory(recipes) {
-    return new Set (recipes.map(recipe => getIngredientArray(recipe)).flat(1));
+function ingredientsInventory(recipes, normalizeAccents) {
+    return new Set (recipes.map(recipe => getIngredientArray(recipe, normalizeAccents)).flat(1));
 }
 
 /**
  * Returns the appliances of the recipes included in the specified array.
  * Useful for the advanced filters.
  * @param {array} recipes - The filtered recipes from which we want to get the appliances
+ * @param {boolean} normalizeAccents - Option to remove diacritic signs
  */
-function applianceInventory(recipes) {
-    return new Set (recipes.map(recipe => recipe.appliance.toLocaleLowerCase()));
+function applianceInventory(recipes, normalizeAccents) {
+    if (normalizeAccents) {
+        return new Set (recipes.map(recipe => recipe.appliance.toLocaleLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '')));
+    }else{
+        return new Set (recipes.map(recipe => recipe.appliance.toLocaleLowerCase()));
+    }
 }
 
 /**
  * Returns the ustensils of the recipes included in the specified array.
  * Useful for the advanced filters.
  * @param {array} recipes - The filtered recipes from which we want to get the ustensils
+ * @param {boolean} normalizeAccents - Option to remove diacritic signs
  */
-function ustensilsInventory(recipes) {
-    return new Set (recipes.map(recipe => recipe.ustensils
-        .map(u => u.toLocaleLowerCase()))
-        .flat(1));
+function ustensilsInventory(recipes, normalizeAccents) {
+    if (normalizeAccents) {
+        return new Set (recipes.map(recipe => recipe.ustensils
+            .map(u => u.toLocaleLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '')))
+            .flat(1));
+    }else{
+        return new Set (recipes.map(recipe => recipe.ustensils
+            .map(u => u.toLocaleLowerCase().normalize('NFD')))
+            .flat(1));
+    }
 }
 
 /**
@@ -509,11 +527,11 @@ function addInventoryRow(inventoryElt) {
  * Removes the corresponding keyword from the keyword array and update the search results accordingly.
  */
 function removeAlertTag(e) {
-    const item = e.target.previousSibling.previousSibling.textContent;
+    const item = e.target.previousSibling.previousSibling.textContent.normalize('NFD').replace(/\p{Diacritic}/gu, '');
     const inventoryType = e.target.parentElement.dataset.inventory;
 
     removeKeyword(item,inventoryType);
-    const filteredRecipes = searchKeywords(recipes,nmgram,recipesObject);
+    const filteredRecipes = searchKeywords(recipes);
     updateDisplayedRecipes(filteredRecipes);
 }
 
@@ -550,7 +568,7 @@ function clickInventoryItem(e) {
     const theme = parentBtn.dataset.theme;
     const inventoryType = parentBtn.dataset.inventory;
     const alertContainer = document.querySelector('.js-tag-container');
-    addKeyword(item,inventoryType);
+    addKeyword(item.normalize('NFD').replace(/\p{Diacritic}/gu, ''),inventoryType);
     addAlertTag(item,theme,inventoryType,alertContainer);
     const filteredRecipes = searchKeywords(recipes,nmgram,recipesObject);
     updateDisplayedRecipes(filteredRecipes);
@@ -559,6 +577,7 @@ function clickInventoryItem(e) {
 /**
  * Used as a callback for an event listener. Called when the user types in the advanced filter text input.
  * Proceed to filter the displayed inventory to only show items containing the string entered by the user.
+ * The search is done by removing diacritic signs, but the results display them.
  */
 function typeInventorySearch(e) {
     const keyword = e.target.value;
@@ -567,8 +586,16 @@ function typeInventorySearch(e) {
     const theme = parentBtn.dataset.theme;
     const inventoryType = parentBtn.dataset.inventory;
     const filteredRecipes = searchKeywords(recipes,nmgram,recipesObject);
-    const filteredInventory = [...inventorySpecified(inventoryType, filteredRecipes)]
-        .filter(item => item.includes(keyword.toLocaleLowerCase()));
+    const processedInventory = [...inventorySpecified(inventoryType, filteredRecipes)]
+        .map(item => {
+            return {
+                itemRaw : item,
+                itemProcessed : item.toLocaleLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '')
+            }
+        });
+    const filteredInventoryProcessed = processedInventory
+        .filter(item => item.itemProcessed.includes(keyword.toLocaleLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '')));
+    const filteredInventory = filteredInventoryProcessed.map(item => item.itemRaw);
     updateInventoryDisplay(inventoryElt,filteredInventory,theme);
 }
 
@@ -576,15 +603,16 @@ function typeInventorySearch(e) {
  * Used the get the appropriate inventory to be displayed in the advanced filter dropdown.
  * @param inventoryType {string} - The type of inventory (ingredient, appliance or ustensil).
  * @param recipes - The recipes already filtered in order to show only relevant items.
+ * @param {boolean} normalizeAccents - Option to remove diacritic signs
  */
-function inventorySpecified(inventoryType, recipes) {
+function inventorySpecified(inventoryType, recipes, normalizeAccents) {
     switch (inventoryType) {
         case 'ingredient' :
-            return ingredientsInventory(recipes);
+            return ingredientsInventory(recipes, normalizeAccents);
         case 'appliance' :
-            return applianceInventory(recipes);
+            return applianceInventory(recipes, normalizeAccents);
         case 'ustensil' :
-            return ustensilsInventory(recipes);
+            return ustensilsInventory(recipes, normalizeAccents);
     }
 }
 
