@@ -602,7 +602,7 @@ function typeInventorySearch(e) {
  * Used the get the appropriate inventory to be displayed in the advanced filter dropdown.
  * @param inventoryType {string} - The type of inventory (ingredient, appliance or ustensil).
  * @param recipes - The recipes already filtered in order to show only relevant items.
- * @param {boolean} normalizeAccents - Option to remove diacritic signs
+ * @param {boolean} [normalizeAccents] - Option to remove diacritic signs
  */
 function inventorySpecified(inventoryType, recipes, normalizeAccents) {
     switch (inventoryType) {
