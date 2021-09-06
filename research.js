@@ -530,7 +530,7 @@ function removeAlertTag(e) {
     const inventoryType = e.target.parentElement.dataset.inventory;
 
     removeKeyword(item,inventoryType);
-    const filteredRecipes = searchKeywords(recipes);
+    const filteredRecipes = searchKeywords(recipes, nmgram, recipesObject);
     updateDisplayedRecipes(filteredRecipes);
 }
 
